@@ -16,7 +16,13 @@
     "**/.gitattributes": true,
     "**/.gitignore": true,
     "**/Dockerfile": true,
-    "**/node_modules": true
+    "**/node_modules": true,
+
+    "**/.editorconfig": true,
+    "**/.postcssrc.json": true,
+    "**/.prettierrc": true,
+    "**/angular.json": true,
+    "**/package-lock.json": true,
   },
 
   // Wykluczenia z wyszukiwarki (Search)
@@ -30,7 +36,13 @@
     "**/LICENSE": true,
     "**/SECURITY.md": true,
     "**/.gitattributes": true,
-    "**/node_modules": true
+    "**/node_modules": true,
+
+    "**/.editorconfig": true,
+    "**/.postcssrc.json": true,
+    "**/.prettierrc": true,
+    "**/angular.json": true,
+    "**/package-lock.json": true,
   },
 
   // Konfiguracja edytora i formatowania pod Angular / TypeScript

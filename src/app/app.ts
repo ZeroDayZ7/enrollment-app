@@ -1,9 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { ThemeService } from '../core/services/theme.service';
 
 @Component({
@@ -11,10 +10,10 @@ import { ThemeService } from '../core/services/theme.service';
   standalone: true,
   imports: [
     RouterOutlet,
+    RouterLink,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
-    MatCardModule,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
