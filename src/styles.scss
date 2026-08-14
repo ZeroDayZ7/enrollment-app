@@ -1,1 +1,39 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+@import "tailwindcss";
+
+// Konfiguracja wariantu Dark Mode w Tailwind v4 dla naszej klasy .dark-mode
+@custom-variant dark (&:where(.dark-mode, .dark-mode *));
+
+html {
+  height: 100%;
+
+  // 1. Domyślny motyw JASNY (Material 3)
+  @include mat.theme((color: (theme-type: light,
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    ));
+  color-scheme: light;
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  // 2. Motyw CIEMNY (aktywowany klasą .dark-mode na kropce html)
+  &.dark-mode {
+    @include mat.theme((color: (theme-type: dark,
+          primary: mat.$azure-palette,
+          tertiary: mat.$blue-palette,
+        ),
+      ));
+    color-scheme: dark;
+  }
+}
+
+body {
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+
+  margin: 0;
+  height: 100%;
+}
