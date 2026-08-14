@@ -1,27 +1,17 @@
 <mat-toolbar
   class="flex justify-between items-center px-6 shadow-sm border-b border-stone-200 dark:border-stone-800 bg-white/80 dark:bg-stone-900/80 backdrop-blur-md sticky top-0 z-50">
-
-  <div class="flex items-center gap-3 cursor-pointer" routerLink="/">
+  <div class="flex items-center gap-3 cursor-pointer" routerLink="/dashboard">
     <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md">
-      <mat-icon>account_balance</mat-icon>
+      <mat-icon>admin_panel_settings</mat-icon>
     </div>
     <div>
-      <span class="font-bold text-base tracking-tight text-stone-800 dark:text-stone-100 block leading-none">e-Urząd
-        Plus</span>
-      <span class="text-xs text-stone-500 dark:text-stone-400 font-medium">System Usług Publicznych</span>
+      <span class="font-bold text-base tracking-tight text-stone-800 dark:text-stone-100 block leading-none">System
+        Administracyjny</span>
+      <span class="text-xs text-stone-500 dark:text-stone-400 font-medium">Niezależny Rejestr Obywateli</span>
     </div>
   </div>
 
   <div class="flex items-center gap-2">
-    <button mat-button routerLink="/citizen/login" class="text-stone-600 dark:text-stone-300 hidden sm:block">
-      Strefa Obywatela
-    </button>
-    <button mat-button routerLink="/official/login" class="text-stone-600 dark:text-stone-300 hidden sm:block">
-      Strefa Urzędnika
-    </button>
-
-    <div class="h-6 w-[1px] bg-stone-200 dark:bg-stone-800 mx-1 hidden sm:block"></div>
-
     <button mat-icon-button (click)="themeService.toggleTheme()" aria-label="Przełącz motyw"
       class="text-stone-600 dark:text-stone-300">
       <mat-icon>{{ themeService.isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>

@@ -4,37 +4,31 @@
     <mat-card-header class="mb-6 text-center flex flex-col items-center">
       <div
         class="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-3">
-        <mat-icon>admin_panel_settings</mat-icon>
+        <mat-icon>security</mat-icon>
       </div>
-      <mat-card-title class="text-2xl font-bold text-stone-800 dark:text-stone-100">Portal Urzędnika</mat-card-title>
-      <mat-card-subtitle class="text-stone-500 dark:text-stone-400">Autoryzacja w systemie administracji
-        publicznej</mat-card-subtitle>
+      <mat-card-title class="text-2xl font-bold text-stone-800 dark:text-stone-100">Autoryzacja
+        Urzędnika</mat-card-title>
+      <mat-card-subtitle class="text-stone-500 dark:text-stone-400">Dostęp do centralnego rejestru
+        systemu</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content class="flex flex-col gap-4">
       <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Identyfikator Urzędnika (PESEL / ID)</mat-label>
-        <input matInput placeholder="ADM-99201">
+        <mat-label>Identyfikator / ID Urzędnika</mat-label>
+        <input matInput placeholder="ADM-001">
         <mat-icon matSuffix>badge</mat-icon>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Hasło systemowe</mat-label>
+        <mat-label>Klucz dostępu / Hasło</mat-label>
         <input matInput type="password" placeholder="••••••••">
         <mat-icon matSuffix>lock</mat-icon>
       </mat-form-field>
 
-      <button mat-flat-button routerLink="/official/dashboard"
+      <button mat-flat-button routerLink="/dashboard"
         class="w-full !bg-indigo-600 !text-white py-3 rounded-lg font-medium">
         Zaloguj do systemu
       </button>
     </mat-card-content>
-
-    <mat-card-actions
-      class="flex justify-between items-center mt-6 pt-4 border-t border-stone-100 dark:border-stone-800">
-      <span class="text-xs text-stone-500">Szukasz panelu obywatela?</span>
-      <a routerLink="/citizen/login"
-        class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold">&larr; Panel Obywatela</a>
-    </mat-card-actions>
   </mat-card>
 </div>
