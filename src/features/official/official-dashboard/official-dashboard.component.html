@@ -1,17 +1,181 @@
-<div class="dashboard-layout">
-  <header>
-    <h1>System Rejestracji Umów Bankowych</h1>
-    <div class="user-info">
-      <span>Zalogowano jako: <strong>{{ authService.currentUser()?.id || 'Pracownik' }}</strong></span>
-      <button (click)="onLogout()">Wyloguj</button>
-    </div>
-  </header>
+<div class="min-h-screen bg-slate-950 text-slate-100 flex">
 
-  <main>
-    <section class="action-card">
-      <h3>Nowa umowa / Nowe konto</h3>
-      <p>Rozpocznij wniosek o założenie konta bankowego dla klienta.</p>
-      <button class="btn-primary">Rozpocznij proces</button>
-    </section>
-  </main>
+  <!-- SIDEBAR -->
+  <aside class="bg-slate-900 border-r border-slate-800 transition-all duration-300 flex flex-col shrink-0"
+    [ngClass]="isSidebarOpen() ? 'w-64' : 'w-20'">
+
+    <!-- Sidebar Header -->
+    <div class="h-16 flex items-center justify-between px-4 border-b border-slate-800">
+      <div class="flex items-center gap-3 overflow-hidden">
+        <span class="text-2xl shrink-0">🛡️</span>
+        @if (isSidebarOpen()) {
+        <span class="font-bold text-lg tracking-wide text-slate-100 whitespace-nowrap">
+          Operator Panel
+        </span>
+        }
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 py-4 px-2 space-y-1">
+      @for (item of navItems; track item.route) {
+      <a [href]="item.route"
+        class="flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-colors"
+        [ngClass]="{'bg-blue-600/10 text-blue-400 font-medium border border-blue-500/20': item.route === '/official/dashboard'}">
+
+        <div class="flex items-center gap-3">
+          <span class="text-xl shrink-0">{{ item.icon }}</span>
+          @if (isSidebarOpen()) {
+          <span class="text-sm whitespace-nowrap">{{ item.label }}</span>
+          }
+        </div>
+
+        @if (item.badge && isSidebarOpen()) {
+        <span
+          class="bg-blue-500/20 text-blue-400 text-xs font-semibold px-2 py-0.5 rounded-full border border-blue-500/30">
+          {{ item.badge }}
+        </span>
+        }
+      </a>
+      }
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="p-4 border-t border-slate-800 bg-slate-900/50">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+        @if (isSidebarOpen()) {
+        <span class="text-xs text-slate-400 truncate">Tryb Mock / Local</span>
+        }
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="flex-1 flex flex-col min-w-0">
+
+    <!-- TOPBAR -->
+    <header
+      class="h-16 bg-slate-900/80 backdrop-blur border-b border-slate-800 px-6 flex items-center justify-between sticky top-0 z-10">
+      <div class="flex items-center gap-4">
+        <button (click)="toggleSidebar()"
+          class="p-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">
+          ☰
+        </button>
+        <h1 class="text-lg font-semibold text-slate-100">Pulpit główny</h1>
+      </div>
+
+      <!-- User Info & Logout -->
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3 pl-4 border-l border-slate-800">
+          <div
+            class="w-9 h-9 rounded-full bg-blue-600/20 border border-blue-500/30 text-blue-400 flex items-center justify-center font-bold text-sm">
+            OP
+          </div>
+          <div class="hidden sm:block text-left">
+            <div class="text-sm font-medium text-slate-200">{{ currentUser()?.id || 'Operator' }}</div>
+            <div class="text-xs text-slate-500">{{ currentUser()?.role || 'OFFICIAL_OPERATOR' }}</div>
+          </div>
+        </div>
+        <button (click)="logout()"
+          class="px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-red-400 hover:bg-red-500/10 rounded-md border border-slate-700 hover:border-red-500/30 transition-all">
+          Wyloguj
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT AREA -->
+    <main class="p-6 space-y-6 flex-1 overflow-y-auto">
+
+      <!-- STATS GRID -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        @for (stat of stats; track stat.title) {
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm">
+          <div class="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">{{ stat.title }}</div>
+          <div class="flex items-baseline justify-between">
+            <div class="text-2xl font-bold text-slate-100">{{ stat.value }}</div>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-md" [ngClass]="{
+                  'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20': stat.trend === 'up',
+                  'bg-rose-500/10 text-rose-400 border border-rose-500/20': stat.trend === 'down',
+                  'bg-slate-800 text-slate-400': stat.trend === 'neutral'
+                }">
+              {{ stat.change }}
+            </span>
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- DATA TABLE PANEL -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+        <div
+          class="p-4 sm:p-6 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-base font-semibold text-slate-100">Ostatnio przetwarzane sprawy</h2>
+            <p class="text-xs text-slate-400 mt-1">Lista bieżących zgłoszeń i weryfikacji w systemie</p>
+          </div>
+          <button
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium rounded-lg transition-colors shadow-lg shadow-blue-600/20">
+            + Nowa weryfikacja
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-300">
+            <thead class="bg-slate-950/50 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-800">
+              <tr>
+                <th class="px-6 py-3.5">ID Sprawy</th>
+                <th class="px-6 py-3.5">Typ operacji</th>
+                <th class="px-6 py-3.5">Operator</th>
+                <th class="px-6 py-3.5">Status</th>
+                <th class="px-6 py-3.5">Data</th>
+                <th class="px-6 py-3.5 text-right">Akcje</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800">
+              <tr class="hover:bg-slate-800/40 transition-colors">
+                <td class="px-6 py-4 font-mono text-xs text-blue-400">#REQ-2026-0891</td>
+                <td class="px-6 py-4 text-slate-200">Weryfikacja Tożsamości QR</td>
+                <td class="px-6 py-4">OP-88421</td>
+                <td class="px-6 py-4">
+                  <span
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    Zatwierdzono
+                  </span>
+                </td>
+                <td class="px-6 py-4 text-xs text-slate-400">15.08.2026 17:02</td>
+                <td class="px-6 py-4 text-right">
+                  <button
+                    class="text-xs font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800 px-2.5 py-1 rounded border border-slate-700 transition-colors">
+                    Szczegóły
+                  </button>
+                </td>
+              </tr>
+              <tr class="hover:bg-slate-800/40 transition-colors">
+                <td class="px-6 py-4 font-mono text-xs text-blue-400">#REQ-2026-0890</td>
+                <td class="px-6 py-4 text-slate-200">Podpisanie Umowy</td>
+                <td class="px-6 py-4">OP-88421</td>
+                <td class="px-6 py-4">
+                  <span
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                    W trakcie
+                  </span>
+                </td>
+                <td class="px-6 py-4 text-xs text-slate-400">15.08.2026 16:45</td>
+                <td class="px-6 py-4 text-right">
+                  <button
+                    class="text-xs font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800 px-2.5 py-1 rounded border border-slate-700 transition-colors">
+                    Szczegóły
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
 </div>

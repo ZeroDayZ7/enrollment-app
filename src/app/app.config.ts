@@ -2,14 +2,15 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { authInterceptor } from '../core/interceptors/auth.interceptor';
+import { mockInterceptor } from '../core/interceptors/mock.interceptor';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZonelessChangeDetection(), // <- Zamiast provideZoneChangeDetection
+    provideZonelessChangeDetection(),
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(
-      withInterceptors([authInterceptor])
+      withInterceptors([mockInterceptor, authInterceptor])
     )
   ]
 };

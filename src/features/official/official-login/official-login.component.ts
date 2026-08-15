@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -19,8 +20,8 @@ export class OfficialLoginComponent {
   readonly showPin = signal(false);
 
   readonly loginForm = this.fb.nonNullable.group({
-    username: ['', [Validators.required, Validators.minLength(3)]],
-    pin: ['', [Validators.required, Validators.minLength(4)]]
+    username: ['operator', [Validators.required, Validators.minLength(3)]],
+    pin: ['1234', [Validators.required, Validators.minLength(4)]]
   });
 
   togglePinVisibility(): void {
@@ -43,7 +44,7 @@ export class OfficialLoginComponent {
         this.isLoading.set(false);
         this.router.navigate(['/official/dashboard']);
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
         this.errorMessage.set(
           err?.error?.message || 'Błąd uwierzytelnienia. Sprawdź identyfikator oraz PIN.'
