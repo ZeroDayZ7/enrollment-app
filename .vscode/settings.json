@@ -21,7 +21,7 @@
     "**/.editorconfig": true,
     "**/.postcssrc.json": true,
     "**/.prettierrc": true,
-    "**/angular.json": true,
+    // "**/angular.json": true,
     "**/package-lock.json": true,
   },
 

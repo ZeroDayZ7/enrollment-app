@@ -1,34 +1,35 @@
-<div class="flex justify-center items-center min-h-[70vh]">
-  <mat-card
-    class="w-full max-w-md p-6 shadow-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 rounded-2xl">
-    <mat-card-header class="mb-6 text-center flex flex-col items-center">
-      <div
-        class="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-3">
-        <mat-icon>security</mat-icon>
-      </div>
-      <mat-card-title class="text-2xl font-bold text-stone-800 dark:text-stone-100">Autoryzacja
-        Urzędnika</mat-card-title>
-      <mat-card-subtitle class="text-stone-500 dark:text-stone-400">Dostęp do centralnego rejestru
-        systemu</mat-card-subtitle>
-    </mat-card-header>
+<div class="login-container">
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-card">
+    <h2>Panel Pracownika</h2>
 
-    <mat-card-content class="flex flex-col gap-4">
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Identyfikator / ID Urzędnika</mat-label>
-        <input matInput placeholder="ADM-001">
-        <mat-icon matSuffix>badge</mat-icon>
-      </mat-form-field>
+    @if (errorMessage()) {
+    <div class="alert alert-error">
+      {{ errorMessage() }}
+    </div>
+    }
 
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Klucz dostępu / Hasło</mat-label>
-        <input matInput type="password" placeholder="••••••••">
-        <mat-icon matSuffix>lock</mat-icon>
-      </mat-form-field>
+    <div class="form-group">
+      <label for="username">Identyfikator / Login</label>
+      <input id="username" type="text" formControlName="username" placeholder="np. jan.kowalski" />
+      @if (loginForm.controls.username.touched && loginForm.controls.username.errors?.['required']) {
+      <small class="error-text">Login jest wymagany</small>
+      }
+    </div>
 
-      <button mat-flat-button routerLink="/dashboard"
-        class="w-full !bg-indigo-600 !text-white py-3 rounded-lg font-medium">
-        Zaloguj do systemu
-      </button>
-    </mat-card-content>
-  </mat-card>
+    <div class="form-group">
+      <label for="pin">Kod PIN</label>
+      <input id="pin" type="password" formControlName="pin" maxlength="8" placeholder="****" />
+      @if (loginForm.controls.pin.touched && loginForm.controls.pin.errors?.['required']) {
+      <small class="error-text">PIN jest wymagany</small>
+      }
+    </div>
+
+    <button type="submit" [disabled]="isLoading()">
+      @if (isLoading()) {
+      Logowanie...
+      } @else {
+      Zaloguj się
+      }
+    </button>
+  </form>
 </div>

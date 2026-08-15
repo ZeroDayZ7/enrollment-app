@@ -1,49 +1,17 @@
-<div class="space-y-6">
-  <div
-    class="bg-gradient-to-r from-stone-800 to-stone-900 rounded-2xl p-6 text-white shadow-lg flex justify-between items-center border border-stone-700">
-    <div>
-      <h1 class="text-2xl font-bold flex items-center gap-2">
-        <mat-icon class="text-indigo-400">verified_user</mat-icon> Centralny Rejestr Systemu
-      </h1>
-      <p class="text-stone-400 text-sm mt-1">Weryfikacja tożsamości i zatwierdzanie kont z aplikacji mobilnej.</p>
+<div class="dashboard-layout">
+  <header>
+    <h1>System Rejestracji Umów Bankowych</h1>
+    <div class="user-info">
+      <span>Zalogowano jako: <strong>{{ authService.currentUser()?.id || 'Pracownik' }}</strong></span>
+      <button (click)="onLogout()">Wyloguj</button>
     </div>
-    <button mat-stroked-button routerLink="/login" class="!border-stone-600 !text-stone-200 hover:!bg-stone-800">
-      <mat-icon>logout</mat-icon> Wyloguj
-    </button>
-  </div>
+  </header>
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <mat-card class="p-5 border border-stone-200 dark:border-stone-800 rounded-2xl bg-white dark:bg-stone-900">
-      <span class="text-stone-400 text-xs font-semibold uppercase tracking-wider">Oczekujące rejestracje</span>
-      <h2 class="text-3xl font-extrabold text-stone-800 dark:text-stone-100 mt-2">18</h2>
-      <p class="text-xs text-amber-600 mt-1 flex items-center gap-1">
-        <mat-icon class="!text-base">schedule</mat-icon> Z aplikacji Flutter
-      </p>
-    </mat-card>
-
-    <mat-card class="p-5 border border-stone-200 dark:border-stone-800 rounded-2xl bg-white dark:bg-stone-900">
-      <span class="text-stone-400 text-xs font-semibold uppercase tracking-wider">Zweryfikowani dziś</span>
-      <h2 class="text-3xl font-extrabold text-stone-800 dark:text-stone-100 mt-2">45</h2>
-      <p class="text-xs text-emerald-600 mt-1 flex items-center gap-1">
-        <mat-icon class="!text-base">check_circle</mat-icon> Aktywne konta
-      </p>
-    </mat-card>
-
-    <mat-card class="p-5 border border-stone-200 dark:border-stone-800 rounded-2xl bg-white dark:bg-stone-900">
-      <span class="text-stone-400 text-xs font-semibold uppercase tracking-wider">Odrzucone zgłoszenia</span>
-      <h2 class="text-3xl font-extrabold text-stone-800 dark:text-stone-100 mt-2">2</h2>
-      <p class="text-xs text-rose-600 mt-1 flex items-center gap-1">
-        <mat-icon class="!text-base">block</mat-icon> Błędne dane
-      </p>
-    </mat-card>
-  </div>
-
-  <mat-card class="p-6 border border-stone-200 dark:border-stone-800 rounded-2xl bg-white dark:bg-stone-900">
-    <h3 class="text-lg font-bold text-stone-800 dark:text-stone-100 mb-4">Zarządzanie rejestrem</h3>
-    <div class="flex flex-wrap gap-4">
-      <button mat-flat-button class="!bg-indigo-600 !text-white">Przeglądaj kolejkę rejestracji</button>
-      <button mat-stroked-button>Generuj klucz autoryzacyjny</button>
-      <button mat-stroked-button>Ustawienia bezpieczeństwa systemu</button>
-    </div>
-  </mat-card>
+  <main>
+    <section class="action-card">
+      <h3>Nowa umowa / Nowe konto</h3>
+      <p>Rozpocznij wniosek o założenie konta bankowego dla klienta.</p>
+      <button class="btn-primary">Rozpocznij proces</button>
+    </section>
+  </main>
 </div>

@@ -1,5 +1,5 @@
 @use '@angular/material' as mat;
-@import "tailwindcss";
+@use "tailwindcss";
 
 // Konfiguracja wariantu Dark Mode w Tailwind v4 dla naszej klasy .dark-mode
 @custom-variant dark (&:where(.dark-mode, .dark-mode *));
