@@ -6,7 +6,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const token = authService.accessToken();
 
-  // Nie doklejaj tokena do samej ścieżki logowania
   if (token && !req.url.includes('/auth/login')) {
     const authReq = req.clone({
       setHeaders: {

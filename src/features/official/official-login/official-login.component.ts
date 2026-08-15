@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -7,9 +6,8 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-official-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './official-login.component.html',
-  // styleUrl: './official-login.component.scss'
+  imports: [ReactiveFormsModule],
+  templateUrl: './official-login.component.html'
 })
 export class OfficialLoginComponent {
   private readonly fb = inject(FormBuilder);
@@ -18,11 +16,16 @@ export class OfficialLoginComponent {
 
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
+  readonly showPin = signal(false);
 
   readonly loginForm = this.fb.nonNullable.group({
-    username: ['', [Validators.required]],
+    username: ['', [Validators.required, Validators.minLength(3)]],
     pin: ['', [Validators.required, Validators.minLength(4)]]
   });
+
+  togglePinVisibility(): void {
+    this.showPin.update((visible) => !visible);
+  }
 
   onSubmit(): void {
     if (this.loginForm.invalid) {
@@ -43,7 +46,7 @@ export class OfficialLoginComponent {
       error: (err) => {
         this.isLoading.set(false);
         this.errorMessage.set(
-          err?.error?.message || 'Błąd logowania. Sprawdź login oraz PIN.'
+          err?.error?.message || 'Błąd uwierzytelnienia. Sprawdź identyfikator oraz PIN.'
         );
       }
     });
