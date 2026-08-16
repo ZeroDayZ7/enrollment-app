@@ -21,7 +21,7 @@ export class OfficialLoginComponent {
   readonly showPassword = signal(false);
 
   readonly loginForm = this.fb.nonNullable.group({
-    username: ['operator', [Validators.required, Validators.minLength(3)]],
+    email: ['operator', [Validators.required, Validators.minLength(3)]],
     password: ['secret123', [Validators.required, Validators.minLength(4)]]
   });
 
@@ -38,7 +38,14 @@ export class OfficialLoginComponent {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    const credentials: LoginRequest = this.loginForm.getRawValue();
+    const formValues = this.loginForm.getRawValue();
+
+    const passwordBytes = new TextEncoder().encode(formValues.password);
+
+    const credentials: LoginRequest = {
+      email: formValues.email,
+      password: Array.from(passwordBytes) as unknown as string
+    };
 
     this.authService.login(credentials).subscribe({
       next: () => {
