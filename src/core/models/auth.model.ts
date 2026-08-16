@@ -1,10 +1,11 @@
 export interface LoginRequest {
   username: string;
-  pin: string;
+  password: string;
 }
 
 export interface UserProfile {
   id: string;
+  username?: string;
   role: string;
   permissions: string[];
 }

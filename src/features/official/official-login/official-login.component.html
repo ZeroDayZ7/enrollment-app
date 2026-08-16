@@ -47,20 +47,20 @@
           }
         </div>
 
-        <!-- Field: Kod PIN z przełącznikiem -->
+        <!-- Field: Hasło z przełącznikiem -->
         <div>
-          <label for="pin" class="block text-xs font-medium text-slate-300 mb-1.5 uppercase tracking-wider">
-            Kod PIN
+          <label for="password" class="block text-xs font-medium text-slate-300 mb-1.5 uppercase tracking-wider">
+            Hasło Dostępowe
           </label>
           <div class="relative">
-            <input id="pin" [type]="showPin() ? 'text' : 'password'" formControlName="pin" maxlength="8"
-              placeholder="••••"
-              class="w-full bg-slate-950/60 border border-slate-700/80 rounded-xl pl-4 pr-11 py-3 text-sm text-slate-100 placeholder-slate-500 tracking-widest focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition duration-150"
-              [class.border-red-500]="loginForm.controls.pin.touched && loginForm.controls.pin.invalid" />
-            <button type="button" (click)="togglePinVisibility()"
+            <input id="password" [type]="showPassword() ? 'text' : 'password'" formControlName="password"
+              placeholder="••••••••"
+              class="w-full bg-slate-950/60 border border-slate-700/80 rounded-xl pl-4 pr-11 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition duration-150"
+              [class.border-red-500]="loginForm.controls.password.touched && loginForm.controls.password.invalid" />
+            <button type="button" (click)="togglePasswordVisibility()"
               class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition p-1"
               tabindex="-1">
-              @if (showPin()) {
+              @if (showPassword()) {
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -76,8 +76,8 @@
               }
             </button>
           </div>
-          @if (loginForm.controls.pin.touched && loginForm.controls.pin.errors?.['required']) {
-          <p class="text-red-400 text-xs mt-1.5">Kod PIN jest wymagany</p>
+          @if (loginForm.controls.password.touched && loginForm.controls.password.errors?.['required']) {
+          <p class="text-red-400 text-xs mt-1.5">Hasło jest wymagane</p>
           }
         </div>
 

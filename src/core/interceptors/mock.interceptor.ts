@@ -9,6 +9,7 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
       accessToken: 'mocked-jwt-token-xyz-1234567890',
       user: {
         id: 'OP-88421',
+        username: 'operator',
         role: 'OFFICIAL_OPERATOR',
         permissions: ['CREATE_USER', 'READ_CONTRACT', 'SIGN_CONTRACT']
       }
