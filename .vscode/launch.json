@@ -4,17 +4,15 @@
   "configurations": [
     {
       "name": "ng serve",
-      "type": "chrome",
+      "type": "node",
       "request": "launch",
-      "preLaunchTask": "npm: start",
-      "url": "http://localhost:4200/"
+      "preLaunchTask": "npm: start"
     },
     {
       "name": "ng test",
-      "type": "chrome",
+      "type": "node",
       "request": "launch",
-      "preLaunchTask": "npm: test",
-      "url": "http://localhost:9876/debug.html"
+      "preLaunchTask": "npm: test"
     }
   ]
 }
