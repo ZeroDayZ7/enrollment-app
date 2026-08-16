@@ -41,19 +41,21 @@ export const routes: Routes = [
           )
       },
       {
-        path: 'applications',
-        component: PlaceholderComponent,
-        data: { title: 'Oczekujące wnioski' }
-      },
-      {
-        path: 'contracts',
-        component: PlaceholderComponent,
-        data: { title: 'Rejestr umów' }
+        path: 'citizens/register',
+        loadComponent: () =>
+          import('../features/official/citizen-registration/citizen-registration.component').then(
+            (m) => m.CitizenRegistrationComponent
+          )
       },
       {
         path: 'verify',
         component: PlaceholderComponent,
         data: { title: 'Weryfikacja QR' }
+      },
+      {
+        path: 'voting-tokens',
+        component: PlaceholderComponent,
+        data: { title: 'Uprawnienia e-Voting' }
       },
       {
         path: 'audit',

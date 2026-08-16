@@ -2,15 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import {
-  FileText,
-  Folder,
   History,
   LayoutDashboard,
   LucideAngularModule,
   LucideIconData,
   Menu,
   QrCode,
-  Shield
+  Shield,
+  UserPlus,
+  Vote
 } from 'lucide-angular';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -42,9 +42,9 @@ export class OfficialLayoutComponent {
 
   readonly navItems: NavItem[] = [
     { label: 'Pulpit główny', icon: LayoutDashboard, route: '/official/dashboard' },
-    { label: 'Oczekujące wnioski', icon: FileText, route: '/official/applications', badge: 5 },
-    { label: 'Rejestr umów', icon: Folder, route: '/official/contracts' },
+    { label: 'Rejestracja obywatela', icon: UserPlus, route: '/official/citizens/register' },
     { label: 'Weryfikacja QR', icon: QrCode, route: '/official/verify' },
+    { label: 'Uprawnienia Voting', icon: Vote, route: '/official/voting-tokens' },
     { label: 'Dziennik zdarzeń', icon: History, route: '/official/audit' }
   ];
 
