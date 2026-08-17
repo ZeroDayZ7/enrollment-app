@@ -8,13 +8,15 @@ import {
   LucideIconData,
   Menu,
   QrCode,
+  Settings,
   Shield,
+  User,
   UserPlus,
   Vote
 } from 'lucide-angular';
 import { AuthService } from '../../../core/services/auth.service';
 
-interface NavItem {
+export interface NavItem {
   label: string;
   icon: LucideIconData | any;
   route: string;
@@ -40,12 +42,17 @@ export class OfficialLayoutComponent {
   readonly currentUser = this.authService.currentUser;
   readonly icons = { Shield, Menu };
 
-  readonly navItems: NavItem[] = [
+  readonly mainNavItems: NavItem[] = [
     { label: 'Pulpit główny', icon: LayoutDashboard, route: '/official/dashboard' },
     { label: 'Rejestracja obywatela', icon: UserPlus, route: '/official/citizens/register' },
     { label: 'Weryfikacja QR', icon: QrCode, route: '/official/verify' },
     { label: 'Uprawnienia Voting', icon: Vote, route: '/official/voting-tokens' },
     { label: 'Dziennik zdarzeń', icon: History, route: '/official/audit' }
+  ];
+
+  readonly bottomNavItems: NavItem[] = [
+    { label: 'Moje konto', icon: User, route: '/official/profile' },
+    { label: 'Ustawienia', icon: Settings, route: '/official/settings' }
   ];
 
   toggleSidebar(): void {

@@ -16,6 +16,8 @@ export class AuthService {
 
   readonly currentUser = signal<UserProfile | null>(null);
   readonly isAuthenticated = computed(() => !!this.currentUser());
+  readonly permissions = computed(() => this.currentUser()?.permissions ?? []);
+  readonly role = computed(() => this.currentUser()?.role ?? null);
 
   private isRefreshing = false;
   private refreshTokenSubject$: Observable<void> | null = null;
@@ -37,6 +39,24 @@ export class AuthService {
     ).pipe(
       switchMap(() => this.checkSession())
     );
+  }
+
+  hasPermission(permission: string): boolean {
+    return this.permissions().includes(permission);
+  }
+
+  hasAnyPermission(requiredPermissions: string[]): boolean {
+    const userPerms = this.permissions();
+    return requiredPermissions.some((perm) => userPerms.includes(perm));
+  }
+
+  hasAllPermissions(requiredPermissions: string[]): boolean {
+    const userPerms = this.permissions();
+    return requiredPermissions.every((perm) => userPerms.includes(perm));
+  }
+
+  hasRole(requiredRole: string): boolean {
+    return this.role() === requiredRole;
   }
 
   refreshToken(): Observable<void> {
@@ -64,12 +84,10 @@ export class AuthService {
   }
 
   logout(redirectUrl: string = '/official/login'): void {
-    // Od razu czyścimy profil lokalny
     this.currentUser.set(null);
 
-    // Próbujemy powiadomić backend o wylogowaniu
     this.http.post(`${this.apiUrl}/official/auth/logout`, {}).pipe(
-      catchError(() => of(null)) // ignorujemy błąd 401 przy wylogowaniu
+      catchError(() => of(null))
     ).subscribe({
       next: () => this.clearSessionAndRedirect(redirectUrl),
       error: () => this.clearSessionAndRedirect(redirectUrl)

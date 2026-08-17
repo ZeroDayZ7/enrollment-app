@@ -1,0 +1,84 @@
+<div class="max-w-5xl mx-auto space-y-6">
+  <!-- Nagłówek profilu -->
+  <div
+    class="bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+      <div
+        class="w-16 h-16 rounded-full bg-blue-600/20 border border-blue-500/30 text-blue-400 flex items-center justify-center font-bold text-xl">
+        {{ user()?.display_name?.substring(0, 2)?.toUpperCase() || 'OP' }}
+      </div>
+      <div>
+        <h2 class="text-xl font-bold text-slate-100">{{ user()?.display_name || 'Operator' }}</h2>
+        <p class="text-sm text-slate-400">{{ user()?.email }}</p>
+        <div class="flex items-center gap-2 mt-1">
+          <span
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+            {{ user()?.status || 'ACTIVE' }}
+          </span>
+          <span
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            {{ user()?.role }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Szczegóły konta i sesji -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Panel danych identyfikacyjnych -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
+      <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
+        <lucide-icon [img]="icons.User" class="w-5 h-5 text-blue-400"></lucide-icon>
+        <h3 class="font-semibold text-slate-100">Informacje Operacyjne</h3>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs text-slate-500 font-medium uppercase tracking-wider">Identyfikator Systemowy
+            (UUID)</label>
+          <div
+            class="mt-1 p-2.5 bg-slate-950 border border-slate-800 rounded-lg text-xs font-mono text-slate-300 break-all select-all">
+            {{ user()?.user_id }}
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs text-slate-500 font-medium uppercase tracking-wider">Adres E-mail</label>
+          <div class="mt-1 text-sm font-medium text-slate-200">
+            {{ user()?.email }}
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs text-slate-500 font-medium uppercase tracking-wider">Ostatnie Logowanie</label>
+          <div class="mt-1 text-sm font-medium text-slate-300 flex items-center gap-2">
+            <lucide-icon [img]="icons.Activity" class="w-4 h-4 text-emerald-400"></lucide-icon>
+            {{ user()?.last_login | date:'yyyy-MM-dd HH:mm:ss' }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel przypisanych uprawnień -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
+      <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
+        <lucide-icon [img]="icons.Key" class="w-5 h-5 text-blue-400"></lucide-icon>
+        <h3 class="font-semibold text-slate-100">Aktywne Uprawnienia (Permissions)</h3>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        @for (perm of user()?.permissions; track perm) {
+        <span
+          class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono bg-slate-950 border border-slate-800 text-slate-300">
+          <lucide-icon [img]="icons.CheckCircle2" class="w-3.5 h-3.5 text-blue-400"></lucide-icon>
+          {{ perm }}
+        </span>
+        } @empty {
+        <p class="text-sm text-slate-500">Brak aktywnych uprawnień.</p>
+        }
+      </div>
+    </div>
+  </div>
+</div>

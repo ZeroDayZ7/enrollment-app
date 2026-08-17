@@ -43,7 +43,18 @@ export const routes: Routes = [
           )
       },
       {
+        path: 'profile',
+        title: 'Moje Konto — Panel Urzędnika',
+        loadComponent: () =>
+          import('../features/official/official-profile/official-profile.component').then(
+            (m) => m.OfficialProfileComponent
+          )
+      },
+      {
         path: 'citizens/register',
+        title: 'Rejestracja Obywatela — Panel Urzędnika',
+        canActivate: [authGuard],
+        data: { permissions: ['users.write'] },
         loadComponent: () =>
           import('../features/official/citizen-registration/citizen-registration.component').then(
             (m) => m.CitizenRegistrationComponent
@@ -52,17 +63,29 @@ export const routes: Routes = [
       {
         path: 'verify',
         component: PlaceholderComponent,
-        data: { title: 'Weryfikacja QR' }
+        canActivate: [authGuard],
+        data: {
+          title: 'Weryfikacja QR',
+          permissions: ['users.read']
+        }
       },
       {
         path: 'voting-tokens',
         component: PlaceholderComponent,
-        data: { title: 'Uprawnienia e-Voting' }
+        canActivate: [authGuard],
+        data: {
+          title: 'Uprawnienia e-Voting',
+          permissions: ['messages.write']
+        }
       },
       {
         path: 'audit',
         component: PlaceholderComponent,
-        data: { title: 'Dziennik zdarzeń' }
+        canActivate: [authGuard],
+        data: {
+          title: 'Dziennik zdarzeń',
+          permissions: ['reports.view']
+        }
       }
     ]
   },

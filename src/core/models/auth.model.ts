@@ -4,13 +4,18 @@ export interface LoginRequest {
 }
 
 export interface UserProfile {
-  id: string;
-  username?: string;
+  user_id: string;
+  email: string;
+  display_name: string;
+  status: string;
   role: string;
   permissions: string[];
+  last_login: string;
 }
 
 export interface LoginResponse {
-  accessToken: string;
-  user: UserProfile;
+  success: boolean;
+  user_id: string;
+  expires_at?: number;
+  two_factor_required?: boolean;
 }
