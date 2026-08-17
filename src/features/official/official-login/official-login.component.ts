@@ -21,7 +21,7 @@ export class OfficialLoginComponent {
   readonly showPassword = signal(false);
 
   readonly loginForm = this.fb.nonNullable.group({
-    email: ['operator', [Validators.required, Validators.minLength(3)]],
+    email: ['admin@plus.pl', [Validators.required, Validators.minLength(3)]],
     password: ['secret123', [Validators.required, Validators.minLength(4)]]
   });
 

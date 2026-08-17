@@ -2,6 +2,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { authInterceptor } from '../core/interceptors/auth.interceptor';
+import { deviceFingerprintInterceptor } from '../core/interceptors/device-fingerprint.interceptor';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -10,7 +11,8 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(
       // withInterceptors([mockInterceptor, authInterceptor])
-      withInterceptors([authInterceptor])
+      withInterceptors([deviceFingerprintInterceptor, authInterceptor])
+      // withInterceptors([authInterceptor])
     )
   ]
 };
