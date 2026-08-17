@@ -14,6 +14,7 @@ import {
   UserPlus,
   Vote
 } from 'lucide-angular';
+import { APP_ROUTES } from '../../../core/constants/app-routes';
 import { AuthService } from '../../../core/services/auth.service';
 
 export interface NavItem {
@@ -43,16 +44,16 @@ export class OfficialLayoutComponent {
   readonly icons = { Shield, Menu };
 
   readonly mainNavItems: NavItem[] = [
-    { label: 'Pulpit główny', icon: LayoutDashboard, route: '/official/dashboard' },
-    { label: 'Rejestracja obywatela', icon: UserPlus, route: '/official/citizens/register' },
-    { label: 'Weryfikacja QR', icon: QrCode, route: '/official/verify' },
-    { label: 'Uprawnienia Voting', icon: Vote, route: '/official/voting-tokens' },
-    { label: 'Dziennik zdarzeń', icon: History, route: '/official/audit' }
+    { label: 'Pulpit główny', icon: LayoutDashboard, route: APP_ROUTES.OFFICIAL.DASHBOARD },
+    { label: 'Rejestracja obywatela', icon: UserPlus, route: APP_ROUTES.OFFICIAL.CITIZENS.REGISTER },
+    { label: 'Weryfikacja QR', icon: QrCode, route: APP_ROUTES.OFFICIAL.VERIFY },
+    { label: 'Uprawnienia Voting', icon: Vote, route: APP_ROUTES.OFFICIAL.VOTING_TOKENS },
+    { label: 'Dziennik zdarzeń', icon: History, route: APP_ROUTES.OFFICIAL.AUDIT }
   ];
 
   readonly bottomNavItems: NavItem[] = [
-    { label: 'Moje konto', icon: User, route: '/official/profile' },
-    { label: 'Ustawienia', icon: Settings, route: '/official/settings' }
+    { label: 'Moje konto', icon: User, route: APP_ROUTES.OFFICIAL.PROFILE },
+    { label: 'Ustawienia', icon: Settings, route: APP_ROUTES.OFFICIAL.SETTINGS }
   ];
 
   toggleSidebar(): void {
@@ -60,6 +61,6 @@ export class OfficialLayoutComponent {
   }
 
   logout(): void {
-    this.authService.logout('/official/login');
+    this.authService.logout(APP_ROUTES.OFFICIAL.LOGIN);
   }
 }

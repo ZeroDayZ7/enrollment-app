@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { APP_ROUTES } from '../../../core/constants/app-routes';
 import { LoginRequest } from '../../../core/models/auth.model';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -50,7 +51,7 @@ export class OfficialLoginComponent {
     this.authService.login(credentials).subscribe({
       next: () => {
         this.isLoading.set(false);
-        this.router.navigate(['/official/dashboard']);
+        this.router.navigate([APP_ROUTES.OFFICIAL.DASHBOARD]);
       },
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
