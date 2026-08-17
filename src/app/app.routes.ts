@@ -5,9 +5,9 @@ import { authGuard } from '../core/guards/auth.guard';
 @Component({
   standalone: true,
   template: `
-    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
-      <h2 class="text-lg font-semibold text-slate-100 mb-2">{{ title }}</h2>
-      <p class="text-sm text-slate-400">Moduł jest w trakcie budowy.</p>
+    <div class="bg-app-surface border border-app-border rounded-xl p-6 transition-colors duration-200">
+      <h2 class="text-lg font-semibold text-app-text-main mb-2">{{ title }}</h2>
+      <p class="text-sm text-app-text-muted">Moduł jest w trakcie budowy.</p>
     </div>
   `
 })
@@ -48,6 +48,15 @@ export const routes: Routes = [
         loadComponent: () =>
           import('../features/official/official-profile/official-profile.component').then(
             (m) => m.OfficialProfileComponent
+          )
+      },
+      {
+        path: 'settings',
+        title: 'Ustawienia — Panel Urzędnika',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('../features/official/official-settings/official-settings.component').then(
+            (m) => m.OfficialSettingsComponent
           )
       },
       {

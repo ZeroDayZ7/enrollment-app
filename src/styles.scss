@@ -1,13 +1,71 @@
 @use '@angular/material' as mat;
 @use "tailwindcss";
 
-// Konfiguracja wariantu Dark Mode w Tailwind v4 dla naszej klasy .dark-mode
+// Tailwind v4 Custom Variant dla klasy .dark-mode
 @custom-variant dark (&:where(.dark-mode, .dark-mode *));
 
+// 1. Definicja semantycznych zmiennych CSS (System Tokenów)
+:root {
+  // Jasny motyw (Light Mode)
+  --color-app-bg: #f8fafc;
+  /* slate-50 */
+  --color-app-surface: #ffffff;
+  /* białe tło kart/panelu */
+  --color-app-surface-hover: #f1f5f9;
+  /* slate-100 */
+  --color-app-border: #e2e8f0;
+  /* slate-200 */
+  --color-app-text-main: #0f172a;
+  /* slate-900 */
+  --color-app-text-muted: #64748b;
+  /* slate-500 */
+  --color-app-primary: #2563eb;
+  /* blue-600 */
+  --color-app-success: #059669;
+  /* emerald-600 dla Light Mode */
+  --color-app-accent: #4f46e5;
+  /* indigo-600 dla Light Mode */
+}
+
+html.dark-mode {
+  // Ciemny motyw (Dark Mode - Twój dotychczasowy układ)
+  --color-app-bg: #020617;
+  /* slate-950 */
+  --color-app-surface: #0f172a;
+  /* slate-900 */
+  --color-app-surface-hover: #1e293b;
+  /* slate-800 */
+  --color-app-border: #1e293b;
+  /* slate-800 */
+  --color-app-text-main: #f8fafc;
+  /* slate-50 */
+  --color-app-text-muted: #94a3b8;
+  /* slate-400 */
+  --color-app-primary: #3b82f6;
+  /* blue-500 */
+  --color-app-success: #34d399;
+  /* emerald-400 dla Dark Mode */
+  --color-app-accent: #818cf8;
+  /* indigo-400 dla Dark Mode */
+}
+
+// 2. Rejestracja tokenów w silniku Tailwind CSS v4
+@theme {
+  --color-app-bg: var(--color-app-bg);
+  --color-app-surface: var(--color-app-surface);
+  --color-app-surface-hover: var(--color-app-surface-hover);
+  --color-app-border: var(--color-app-border);
+  --color-app-text-main: var(--color-app-text-main);
+  --color-app-text-muted: var(--color-app-text-muted);
+  --color-app-primary: var(--color-app-primary);
+  --color-app-success: var(--color-app-success);
+  --color-app-accent: var(--color-app-accent);
+}
+
+// 3. Integracja z Angular Material M3
 html {
   height: 100%;
 
-  // 1. Domyślny motyw JASNY (Material 3)
   @include mat.theme((color: (theme-type: light,
         primary: mat.$azure-palette,
         tertiary: mat.$blue-palette,
@@ -18,7 +76,6 @@ html {
   color-scheme: light;
   transition: background-color 0.2s ease, color 0.2s ease;
 
-  // 2. Motyw CIEMNY (aktywowany klasą .dark-mode na kropce html)
   &.dark-mode {
     @include mat.theme((color: (theme-type: dark,
           primary: mat.$azure-palette,
@@ -30,10 +87,9 @@ html {
 }
 
 body {
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
+  background-color: var(--color-app-bg);
+  color: var(--color-app-text-main);
   font: var(--mat-sys-body-medium);
-
   margin: 0;
   height: 100%;
 }
