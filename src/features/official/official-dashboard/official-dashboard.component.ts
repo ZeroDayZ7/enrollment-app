@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FileText, LucideAngularModule, QrCode, UserPlus, Vote } from 'lucide-angular';
+import { APP_ROUTES } from '../../../core/constants/app-routes';
 
 @Component({
   selector: 'app-official-dashboard',
@@ -10,6 +11,7 @@ import { FileText, LucideAngularModule, QrCode, UserPlus, Vote } from 'lucide-an
   templateUrl: './official-dashboard.component.html'
 })
 export class OfficialDashboardComponent {
+  readonly routes = APP_ROUTES;
   readonly icons = { UserPlus, QrCode, Vote, FileText };
 
   readonly recentLogs = [
