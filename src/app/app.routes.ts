@@ -19,6 +19,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'official/dashboard', pathMatch: 'full' },
   {
     path: 'official/login',
+    title: 'Logowanie — Panel Urzędnika',
     loadComponent: () =>
       import('../features/official/official-login/official-login.component').then(
         (m) => m.OfficialLoginComponent
@@ -35,6 +36,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
         path: 'dashboard',
+        title: 'Pulpit — Panel Urzędnika',
         loadComponent: () =>
           import('../features/official/official-dashboard/official-dashboard.component').then(
             (m) => m.OfficialDashboardComponent

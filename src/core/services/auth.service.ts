@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { LoginRequest, LoginResponse, UserProfile } from '../models/auth.model';
+import { LoginRequest, UserProfile } from '../models/auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,24 +14,43 @@ export class AuthService {
   private readonly router = inject(Router);
   private readonly apiUrl = environment.apiUrl;
 
-  readonly accessToken = signal<string | null>(localStorage.getItem('access_token'));
   readonly currentUser = signal<UserProfile | null>(null);
-  readonly isAuthenticated = computed(() => !!this.accessToken());
+  readonly isAuthenticated = computed(() => !!this.currentUser());
 
-  login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/official/auth/login`, credentials).pipe(
-      tap((res) => {
-        this.accessToken.set(res.accessToken);
-        this.currentUser.set(res.user);
-        localStorage.setItem('access_token', res.accessToken);
+  checkSession(): Observable<UserProfile | null> {
+    return this.http.get<UserProfile>(`${this.apiUrl}/official/auth/me`).pipe(
+      tap((user) => this.currentUser.set(user)),
+      catchError(() => {
+        this.currentUser.set(null);
+        return of(null);
       })
     );
   }
 
+  login(credentials: LoginRequest): Observable<{ success: boolean; user_id: string }> {
+    return this.http.post<{ success: boolean; user_id: string }>(
+      `${this.apiUrl}/official/auth/login`,
+      credentials
+    ).pipe(
+      tap(() => {
+        this.checkSession().subscribe();
+      })
+    );
+  }
+
+  refreshToken(): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/official/auth/refresh`, {});
+  }
+
   logout(redirectUrl: string = '/official/login'): void {
-    this.accessToken.set(null);
+    this.http.post(`${this.apiUrl}/official/auth/logout`, {}).subscribe({
+      next: () => this.clearSessionAndRedirect(redirectUrl),
+      error: () => this.clearSessionAndRedirect(redirectUrl)
+    });
+  }
+
+  private clearSessionAndRedirect(redirectUrl: string): void {
     this.currentUser.set(null);
-    localStorage.removeItem('access_token');
     this.router.navigate([redirectUrl]);
   }
 }

@@ -22,7 +22,7 @@ export class OfficialLoginComponent {
 
   readonly loginForm = this.fb.nonNullable.group({
     email: ['admin@plus.pl', [Validators.required, Validators.minLength(3)]],
-    password: ['secret123', [Validators.required, Validators.minLength(4)]]
+    password: ['Zaq1@wsx', [Validators.required, Validators.minLength(4)]]
   });
 
   togglePasswordVisibility(): void {
