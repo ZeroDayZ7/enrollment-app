@@ -1,15 +1,17 @@
-<div class="h-screen w-screen bg-slate-950 text-slate-100 flex overflow-hidden">
+<!-- src/app/features/official/official-layout/official-layout.component.html -->
+<div class="h-screen w-screen bg-app-bg text-app-text-main flex overflow-hidden transition-colors duration-200">
 
   <!-- SIDEBAR (Przyklejony do lewej krawędzi, stała wysokość ekranu) -->
-  <aside class="h-full bg-slate-900 border-r border-slate-800 transition-all duration-300 flex flex-col shrink-0 z-20"
+  <aside
+    class="h-full bg-app-surface border-r border-app-border transition-all duration-300 flex flex-col shrink-0 z-20"
     [ngClass]="isSidebarOpen() ? 'w-64' : 'w-20'">
 
     <!-- Sidebar Header -->
-    <div class="h-16 flex items-center justify-between px-4 border-b border-slate-800 shrink-0">
+    <div class="h-16 flex items-center justify-between px-4 border-b border-app-border shrink-0">
       <div class="flex items-center gap-3 overflow-hidden">
-        <lucide-icon [img]="icons.Shield" class="w-6 h-6 text-blue-500 shrink-0"></lucide-icon>
+        <lucide-icon [img]="icons.Shield" class="w-6 h-6 text-app-primary shrink-0"></lucide-icon>
         @if (isSidebarOpen()) {
-        <span class="font-bold text-lg tracking-wide text-slate-100 whitespace-nowrap">
+        <span class="font-bold text-lg tracking-wide text-app-text-main whitespace-nowrap">
           Operator Panel
         </span>
         }
@@ -21,15 +23,15 @@
       <!-- Sekcja główna (Sprawy urzędowe) -->
       <div class="space-y-1">
         @if (isSidebarOpen()) {
-        <div class="px-3 pb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+        <div class="px-3 pb-2 text-[10px] font-semibold text-app-text-muted uppercase tracking-wider">
           Urzędowe
         </div>
         }
         @for (item of mainNavItems; track item.route) {
         <a [routerLink]="item.route"
-          routerLinkActive="bg-blue-600/10 text-blue-400 font-medium border border-blue-500/20"
+          routerLinkActive="bg-app-primary/10 text-app-primary font-medium border border-app-primary/20"
           [routerLinkActiveOptions]="{ exact: true }"
-          class="flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-colors">
+          class="flex items-center justify-between px-3 py-2.5 rounded-lg text-app-text-muted hover:text-app-text-main hover:bg-app-surface-hover transition-colors">
 
           <div class="flex items-center gap-3">
             <lucide-icon [img]="item.icon" class="w-5 h-5 shrink-0"></lucide-icon>
@@ -40,7 +42,7 @@
 
           @if (item.badge && isSidebarOpen()) {
           <span
-            class="bg-blue-500/20 text-blue-400 text-xs font-semibold px-2 py-0.5 rounded-full border border-blue-500/30">
+            class="bg-app-primary/10 text-app-primary text-xs font-semibold px-2 py-0.5 rounded-full border border-app-primary/20">
             {{ item.badge }}
           </span>
           }
@@ -49,17 +51,17 @@
       </div>
 
       <!-- Sekcja dolna (Profil / Ustawienia) z separatorem -->
-      <div class="pt-4 border-t border-slate-800 space-y-1">
+      <div class="pt-4 border-t border-app-border space-y-1">
         @if (isSidebarOpen()) {
-        <div class="px-3 pb-2 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+        <div class="px-3 pb-2 text-[10px] font-semibold text-app-text-muted uppercase tracking-wider">
           Konto i System
         </div>
         }
         @for (item of bottomNavItems; track item.route) {
         <a [routerLink]="item.route"
-          routerLinkActive="bg-blue-600/10 text-blue-400 font-medium border border-blue-500/20"
+          routerLinkActive="bg-app-primary/10 text-app-primary font-medium border border-app-primary/20"
           [routerLinkActiveOptions]="{ exact: true }"
-          class="flex items-center justify-between px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-colors">
+          class="flex items-center justify-between px-3 py-2.5 rounded-lg text-app-text-muted hover:text-app-text-main hover:bg-app-surface-hover transition-colors">
 
           <div class="flex items-center gap-3">
             <lucide-icon [img]="item.icon" class="w-5 h-5 shrink-0"></lucide-icon>
@@ -71,16 +73,6 @@
         }
       </div>
     </nav>
-
-    <!-- Sidebar Footer -->
-    <div class="p-4 border-t border-slate-800 bg-slate-900/50 shrink-0">
-      <div class="flex items-center gap-2">
-        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-        @if (isSidebarOpen()) {
-        <span class="text-xs text-slate-400 truncate">Tryb Mock / Local</span>
-        }
-      </div>
-    </div>
   </aside>
 
   <!-- MAIN WRAPPER -->
@@ -88,32 +80,32 @@
 
     <!-- TOPBAR -->
     <header
-      class="h-16 bg-slate-900/80 backdrop-blur border-b border-slate-800 px-6 flex items-center justify-between shrink-0 z-10">
+      class="h-16 bg-app-surface/80 backdrop-blur border-b border-app-border px-6 flex items-center justify-between shrink-0 z-10 transition-colors duration-200">
       <div class="flex items-center gap-4">
         <button (click)="toggleSidebar()"
-          class="p-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">
+          class="p-2 rounded-lg text-app-text-muted hover:text-app-text-main hover:bg-app-surface-hover transition-colors">
           <lucide-icon [img]="icons.Menu" class="w-5 h-5"></lucide-icon>
         </button>
-        <h1 class="text-lg font-semibold text-slate-100">Panel Urzędnika</h1>
+        <h1 class="text-lg font-semibold text-app-text-main">Panel Urzędnika</h1>
       </div>
 
       <!-- User Info & Logout -->
       <div class="flex items-center gap-4">
-        <div class="flex items-center gap-3 pl-4 border-l border-slate-800">
+        <div class="flex items-center gap-3 pl-4 border-l border-app-border">
           <div
-            class="w-9 h-9 rounded-full bg-blue-600/20 border border-blue-500/30 text-blue-400 flex items-center justify-center font-bold text-sm">
+            class="w-9 h-9 rounded-full bg-app-primary/10 border border-app-primary/20 text-app-primary flex items-center justify-center font-bold text-sm">
             {{ currentUser()?.display_name?.substring(0, 2)?.toUpperCase() || 'OP' }}
           </div>
           <div class="hidden sm:block text-left">
-            <div class="text-sm font-medium text-slate-200">
+            <div class="text-sm font-medium text-app-text-main">
               {{ currentUser()?.display_name || 'Operator' }}
             </div>
-            <div class="text-xs text-slate-500 font-mono">{{ currentUser()?.role || 'OFFICIAL_OPERATOR' }}</div>
+            <div class="text-xs text-app-text-muted font-mono">{{ currentUser()?.role || 'OFFICIAL_OPERATOR' }}</div>
           </div>
         </div>
 
         <button (click)="logout()"
-          class="px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-red-400 hover:bg-red-500/10 rounded-md border border-slate-700 hover:border-red-500/30 transition-all">
+          class="px-3 py-1.5 text-xs font-medium text-app-text-muted hover:text-red-500 hover:bg-red-500/10 rounded-md border border-app-border hover:border-red-500/30 transition-all">
           Wyloguj
         </button>
       </div>
