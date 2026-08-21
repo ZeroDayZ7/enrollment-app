@@ -3,7 +3,6 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, shareReplay, switchMap, tap } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { APP_ROUTES } from '../constants/app-routes';
 import { LoginRequest, UserProfile } from '../models/auth.model';
@@ -14,7 +13,6 @@ import { LoginRequest, UserProfile } from '../models/auth.model';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
-  private readonly apiUrl = environment.apiUrl;
 
   readonly currentUser = signal<UserProfile | null>(null);
   readonly isAuthenticated = computed(() => !!this.currentUser());
@@ -25,7 +23,7 @@ export class AuthService {
   private refreshTokenSubject$: Observable<void> | null = null;
 
   checkSession(): Observable<UserProfile | null> {
-    return this.http.get<UserProfile>(`${this.apiUrl}${API_ENDPOINTS.OFFICIAL.AUTH.ME}`).pipe(
+    return this.http.get<UserProfile>(API_ENDPOINTS.OFFICIAL.AUTH.ME).pipe(
       tap((user) => this.currentUser.set(user)),
       catchError(() => {
         this.currentUser.set(null);
@@ -36,7 +34,7 @@ export class AuthService {
 
   login(credentials: LoginRequest): Observable<UserProfile | null> {
     return this.http.post<{ success: boolean; user_id: string }>(
-      `${this.apiUrl}${API_ENDPOINTS.OFFICIAL.AUTH.LOGIN}`,
+      API_ENDPOINTS.OFFICIAL.AUTH.LOGIN,
       credentials
     ).pipe(
       switchMap(() => this.checkSession())
@@ -68,7 +66,7 @@ export class AuthService {
 
     this.isRefreshing = true;
 
-    this.refreshTokenSubject$ = this.http.post<void>(`${this.apiUrl}${API_ENDPOINTS.OFFICIAL.AUTH.REFRESH}`, {}).pipe(
+    this.refreshTokenSubject$ = this.http.post<void>(API_ENDPOINTS.OFFICIAL.AUTH.REFRESH, {}).pipe(
       tap(() => {
         this.isRefreshing = false;
         this.refreshTokenSubject$ = null;
@@ -88,7 +86,7 @@ export class AuthService {
   logout(redirectUrl: string = APP_ROUTES.OFFICIAL.LOGIN): void {
     this.currentUser.set(null);
 
-    this.http.post(`${this.apiUrl}${API_ENDPOINTS.OFFICIAL.AUTH.LOGOUT}`, {}).pipe(
+    this.http.post(API_ENDPOINTS.OFFICIAL.AUTH.LOGOUT, {}).pipe(
       catchError(() => of(null))
     ).subscribe({
       next: () => this.clearSessionAndRedirect(redirectUrl),
