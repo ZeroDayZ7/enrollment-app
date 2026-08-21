@@ -1,4 +1,3 @@
-<!-- src/app/features/auth/login/login.component.html -->
 <div
   class="min-h-screen w-full flex flex-col justify-center items-center p-4 bg-app-bg text-app-text-main transition-colors duration-200">
   <div class="w-full max-w-md">
@@ -7,7 +6,7 @@
     <div
       class="bg-app-surface border border-app-border shadow-2xl rounded-2xl backdrop-blur-md p-8 transition-colors duration-200">
 
-      <!-- Nagłówek Portalu -->
+      <!-- Nagłówek -->
       <div class="flex flex-col items-center text-center mb-8">
         <div
           class="w-12 h-12 bg-app-primary/10 border border-app-primary/20 rounded-xl flex items-center justify-center mb-3 text-app-primary shadow-inner">
@@ -19,7 +18,9 @@
         </div>
         <span class="text-xs font-semibold tracking-widest text-app-primary uppercase">System Rejestracji Umów</span>
         <h1 class="text-2xl font-bold text-app-text-main tracking-tight mt-1">Portal Pracownika</h1>
-        <p class="text-xs text-app-text-muted mt-1">Dostęp zastrzeżony wyłącznie dla upoważnionych operatorów</p>
+        <p class="text-xs text-app-text-muted mt-1">
+          @if (step() === 1) { Krok 1: Identyfikacja operatora } @else { Krok 2: Uwierzytelnianie sprzętowe }
+        </p>
       </div>
 
       <!-- Alert błędu -->
@@ -35,9 +36,9 @@
       </div>
       }
 
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
-
-        <!-- Field: Identyfikator -->
+      <!-- KROK 1: LOGIN + HASŁO -->
+      @if (step() === 1) {
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmitStep1()" class="space-y-5">
         <div>
           <label for="email" class="block text-xs font-medium text-app-text-muted mb-1.5 uppercase tracking-wider">
             Identyfikator Operatora
@@ -50,7 +51,6 @@
           }
         </div>
 
-        <!-- Field: Hasło z przełącznikiem -->
         <div>
           <label for="password" class="block text-xs font-medium text-app-text-muted mb-1.5 uppercase tracking-wider">
             Hasło Dostępowe
@@ -84,7 +84,6 @@
           }
         </div>
 
-        <!-- Przycisk Zaloguj -->
         <button type="submit" [disabled]="isLoading()"
           class="w-full bg-app-primary hover:opacity-90 active:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-sm rounded-xl py-3 px-4 shadow-lg shadow-app-primary/20 transition duration-150 flex items-center justify-center gap-2 mt-2">
           @if (isLoading()) {
@@ -95,7 +94,50 @@
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
             </path>
           </svg>
-          <span>Uwierzytelnianie...</span>
+          <span>Weryfikacja...</span>
+          } @else {
+          <span>Przejdź do Uwierzytelnienia</span>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+            class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+          </svg>
+          }
+        </button>
+      </form>
+      }
+
+      <!-- KROK 2: KARTA KRYPTOGRAFICZNA -->
+      @if (step() === 2) {
+      <form (ngSubmit)="onSubmitStep2()" class="space-y-5">
+        <div>
+          <label class="block text-xs font-medium text-app-text-muted mb-1.5 uppercase tracking-wider">
+            Plik Certyfikatu / Karty
+          </label>
+          <input type="file" (change)="onCardFileSelected($event)" accept=".json"
+            class="w-full text-xs text-app-text-muted file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-app-primary/10 file:text-app-primary hover:file:bg-app-primary/20 cursor-pointer border border-app-border rounded-xl bg-app-bg" />
+        </div>
+
+        @if (loadedCard(); as card) {
+        <div class="p-3 bg-app-primary/5 border border-app-primary/20 rounded-xl text-xs space-y-1">
+          <p class="text-app-primary font-medium">Załadowana karta:</p>
+          <p class="text-app-text-muted">SN: <span class="text-app-text-main font-mono">{{ card.cardSerialNumber
+              }}</span></p>
+          <p class="text-app-text-muted">ID Użytkownika: <span class="text-app-text-main font-mono">{{ card.userId
+              }}</span></p>
+        </div>
+        }
+
+        <button type="submit" [disabled]="isLoading() || !loadedCard()"
+          class="w-full bg-app-primary hover:opacity-90 active:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-sm rounded-xl py-3 px-4 shadow-lg shadow-app-primary/20 transition duration-150 flex items-center justify-center gap-2 mt-2">
+          @if (isLoading()) {
+          <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+          <span>Podpisywanie wyzwania...</span>
           } @else {
           <span>Autoryzuj Dostęp</span>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
@@ -104,8 +146,8 @@
           </svg>
           }
         </button>
-
       </form>
+      }
 
       <!-- Stopka bezpieczeństwa -->
       <div class="mt-8 pt-6 border-t border-app-border flex items-center justify-between text-xs text-app-text-muted">

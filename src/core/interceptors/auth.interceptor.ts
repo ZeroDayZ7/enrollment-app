@@ -1,3 +1,4 @@
+// core/interceptors/auth.interceptor.ts
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError } from 'rxjs';
@@ -15,7 +16,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       const isAuthRequest =
         req.url.includes(API_ENDPOINTS.OFFICIAL.AUTH.LOGIN) ||
-        req.url.includes(API_ENDPOINTS.OFFICIAL.AUTH.REFRESH);
+        req.url.includes(API_ENDPOINTS.OFFICIAL.AUTH.REFRESH) ||
+        req.url.includes(API_ENDPOINTS.OFFICIAL.AUTH.ME);
 
       if (error.status === 401 && !isAuthRequest) {
         return authService.refreshToken().pipe(

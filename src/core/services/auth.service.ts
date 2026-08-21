@@ -5,7 +5,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { APP_ROUTES } from '../constants/app-routes';
-import { LoginRequest, UserProfile } from '../models/auth.model';
+import { LoginRequest, LoginStep1Response, LoginStep2Request, UserProfile } from '../models/auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -32,11 +32,14 @@ export class AuthService {
     );
   }
 
-  login(credentials: LoginRequest): Observable<UserProfile | null> {
-    return this.http.post<{ success: boolean; user_id: string }>(
-      API_ENDPOINTS.OFFICIAL.AUTH.LOGIN,
-      credentials
-    ).pipe(
+  // Krok 1: Weryfikacja Loginu + Hasła -> Zwrot Challenge
+  loginStep1(credentials: LoginRequest): Observable<LoginStep1Response> {
+    return this.http.post<LoginStep1Response>('/official/auth/login', credentials);
+  }
+
+  // Krok 2: Weryfikacja Podpisu Kryptograficznego
+  loginStep2(payload: LoginStep2Request): Observable<UserProfile | null> {
+    return this.http.post<{ success: boolean }>('/official/auth/login/step2', payload).pipe(
       switchMap(() => this.checkSession())
     );
   }

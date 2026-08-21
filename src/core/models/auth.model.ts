@@ -19,3 +19,16 @@ export interface LoginResponse {
   expires_at?: number;
   two_factor_required?: boolean;
 }
+
+export interface LoginStep1Response {
+  requiresCard: boolean;
+  challenge: string;
+  userId: string;
+}
+
+export interface LoginStep2Request {
+  userId: string;
+  cardSerialNumber: string;
+  challenge: string;
+  signature: string;
+}

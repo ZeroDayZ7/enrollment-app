@@ -1,3 +1,4 @@
+// core/interceptors/error.interceptor.ts
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
@@ -10,11 +11,11 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       switch (error.status) {
         case 0:
-          console.error('[ErrorInterceptor] Brak połączenia z siecią lub serwer nie odpowiada (CORS / Offline).');
+          console.error('[ErrorInterceptor] Brak połączenia z siecią lub CORS.');
           break;
         case 401:
-          console.warn('[ErrorInterceptor] Sesja wygasła (401). Przekierowanie do logowania.');
-          router.navigate(['/auth/login']);
+          // Nie przekierowuj tutaj! Pozwól authInterceptorowi obsłużyć refresh / logout,
+          // a komponentom logowania obsłużyć błędne hasło.
           break;
         case 403:
           console.warn('[ErrorInterceptor] Brak uprawnień do zasobu (403).');
@@ -24,7 +25,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           break;
         default:
           if (error.status >= 500) {
-            console.error(`[ErrorInterceptor] Krytyczny błąd serwera (${error.status}):`, error.message);
+            console.error(`[ErrorInterceptor] Błąd serwera (${error.status}):`, error.message);
           }
           break;
       }
