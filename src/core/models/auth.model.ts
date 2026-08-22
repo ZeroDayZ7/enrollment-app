@@ -1,6 +1,6 @@
 export interface LoginRequest {
   email: string;
-  password: string;
+  password: string | number[];
 }
 
 export interface UserProfile {
@@ -13,17 +13,11 @@ export interface UserProfile {
   last_login: string;
 }
 
-export interface LoginResponse {
-  success: boolean;
-  user_id: string;
-  expires_at?: number;
-  two_factor_required?: boolean;
-}
-
 export interface LoginStep1Response {
-  requiresCard: boolean;
+  type: string;
+  "2fa_required": boolean;
+  setup_token: string;
   challenge: string;
-  userId: string;
 }
 
 export interface LoginStep2Request {

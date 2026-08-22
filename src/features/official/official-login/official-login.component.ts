@@ -18,13 +18,11 @@ export class OfficialLoginComponent {
   private readonly cryptoService = inject(CryptoService);
   private readonly router = inject(Router);
 
-  // Stan UI
   readonly step = signal<1 | 2>(1);
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly showPassword = signal(false);
 
-  // Dane Kroku 2
   private challenge = signal<string | null>(null);
   private userId = signal<string | null>(null);
   readonly loadedCard = signal<DevCardFile | null>(null);
@@ -34,18 +32,16 @@ export class OfficialLoginComponent {
     password: ['Zaq1@wsx', [Validators.required, Validators.minLength(4)]]
   });
 
-  readonly cardForm = this.fb.nonNullable.group({
-    pin: ['', [Validators.required, Validators.minLength(4)]]
-  });
-
   togglePasswordVisibility(): void {
     this.showPassword.update((val) => !val);
   }
 
-  // Krok 1: Wyłapanie danych i konwersja hasła do tablicy bajtów
   onSubmitStep1(): void {
+    console.group('🚀 [Login Component] Submit Krok 1');
     if (this.loginForm.invalid) {
+      console.warn('⚠️ Formularz niepoprawny');
       this.loginForm.markAllAsTouched();
+      console.groupEnd();
       return;
     }
 
@@ -53,8 +49,6 @@ export class OfficialLoginComponent {
     this.errorMessage.set(null);
 
     const formValues = this.loginForm.getRawValue();
-
-    // Konwersja hasła na bytes
     const passwordBytes = new TextEncoder().encode(formValues.password);
 
     const payload = {
@@ -62,44 +56,68 @@ export class OfficialLoginComponent {
       password: Array.from(passwordBytes) as unknown as string
     };
 
+    console.log('📤 Wysłanie żądania Step 1 z payloadem:', payload);
+
     this.authService.loginStep1(payload).subscribe({
       next: (res) => {
+        console.log('📥 Odpowiedź z Step 1 (Backend):', res);
         this.isLoading.set(false);
         this.challenge.set(res.challenge);
-        this.userId.set(res.userId);
+        console.log('🔑 Ustawiono challenge w sygnale:', res.challenge);
         this.step.set(2);
+        console.log('🔄 Zmieniono krok na 2');
+        console.groupEnd();
       },
       error: (err: HttpErrorResponse) => {
+        console.error('❌ Błąd w Krok 1:', err);
         this.isLoading.set(false);
         this.errorMessage.set(
           err?.error?.message || 'Nieprawidłowy identyfikator lub hasło.'
         );
+        console.groupEnd();
       }
     });
   }
 
-  // Krok 2: Plik karty
   async onCardFileSelected(event: Event): Promise<void> {
+    console.group('📁 [Login Component] Wybór pliku karty');
     const input = event.target as HTMLInputElement;
-    if (!input.files?.[0]) return;
+    if (!input.files?.[0]) {
+      console.warn('⚠️ Nie wybrano żadnego pliku.');
+      console.groupEnd();
+      return;
+    }
 
     try {
       const card = await this.cryptoService.parseCardFile(input.files[0]);
       this.loadedCard.set(card);
+      this.userId.set(card.userId);
       this.errorMessage.set(null);
+      console.log('✅ Karta załadowana do stanu komponentu:', card);
     } catch (err: any) {
+      console.error('❌ Błąd parsowania pliku karty:', err);
       this.errorMessage.set(err.message || 'Błąd odczytu pliku karty.');
     }
+    console.groupEnd();
   }
 
-  // Krok 2: Podpis i finalizacja
   async onSubmitStep2(): Promise<void> {
+    console.group('🚀 [Login Component] Submit Krok 2');
     const card = this.loadedCard();
     const challenge = this.challenge();
     const userId = this.userId();
 
+    console.log('Stan przed wysłaniem Step 2:', {
+      cardLoaded: !!card,
+      challenge,
+      userId,
+      cardSerialNumber: card?.cardSerialNumber
+    });
+
     if (!card || !challenge || !userId) {
+      console.warn('⚠️ Brak wymaganych danych do Step 2');
       this.errorMessage.set('Wczytaj plik karty urzędnika.');
+      console.groupEnd();
       return;
     }
 
@@ -109,39 +127,50 @@ export class OfficialLoginComponent {
     try {
       const signature = await this.cryptoService.signChallenge(challenge, card.privateKey);
 
-      this.authService.loginStep2({
+      const payload = {
         userId,
         cardSerialNumber: card.cardSerialNumber,
         challenge,
         signature
-      }).subscribe({
-        next: () => {
+      };
+
+      console.log('📤 Wysłanie payloadu do Step 2:', payload);
+
+      this.authService.loginStep2(payload).subscribe({
+        next: (userProfile) => {
+          console.log('✅ Zalogowano pomyślnie. Zwrócony profil:', userProfile);
           this.clearSensitiveData();
+          console.log('🔀 Przekierowywanie do:', APP_ROUTES.OFFICIAL.DASHBOARD);
           this.router.navigate([APP_ROUTES.OFFICIAL.DASHBOARD]);
+          console.groupEnd();
         },
         error: (err: HttpErrorResponse) => {
+          console.error('❌ Błąd odpowiedzi z backendu w Step 2:', err);
           this.isLoading.set(false);
           this.errorMessage.set(err?.error?.message || 'Weryfikacja podpisu kryptograficznego nie powiodła się.');
+          console.groupEnd();
         }
       });
     } catch (err) {
+      console.error('❌ Wyjątek podczas generowania podpisu:', err);
       this.isLoading.set(false);
       this.errorMessage.set('Błąd podczas generowania podpisu kryptograficznego.');
+      console.groupEnd();
     }
   }
 
-  // Powrót do kroku 1
   resetToStep1(): void {
+    console.log('🔄 Reset do Kroku 1');
     this.clearSensitiveData();
     this.step.set(1);
     this.errorMessage.set(null);
   }
 
   private clearSensitiveData(): void {
+    console.log('🧹 Czyszczenie wrażliwych danych ze stanu');
     this.loadedCard.set(null);
     this.challenge.set(null);
     this.userId.set(null);
-    this.cardForm.reset();
     this.loginForm.reset();
   }
 }

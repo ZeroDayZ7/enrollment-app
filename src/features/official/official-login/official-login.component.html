@@ -108,7 +108,7 @@
 
       <!-- KROK 2: KARTA KRYPTOGRAFICZNA -->
       @if (step() === 2) {
-      <form (ngSubmit)="onSubmitStep2()" class="space-y-5">
+      <form (submit)="$event.preventDefault(); onSubmitStep2()" class="space-y-5">
         <div>
           <label class="block text-xs font-medium text-app-text-muted mb-1.5 uppercase tracking-wider">
             Plik Certyfikatu / Karty

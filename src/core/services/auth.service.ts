@@ -34,12 +34,12 @@ export class AuthService {
 
   // Krok 1: Weryfikacja Loginu + Hasła -> Zwrot Challenge
   loginStep1(credentials: LoginRequest): Observable<LoginStep1Response> {
-    return this.http.post<LoginStep1Response>('/official/auth/login', credentials);
+    return this.http.post<LoginStep1Response>(API_ENDPOINTS.OFFICIAL.AUTH.LOGIN, credentials);
   }
 
   // Krok 2: Weryfikacja Podpisu Kryptograficznego
   loginStep2(payload: LoginStep2Request): Observable<UserProfile | null> {
-    return this.http.post<{ success: boolean }>('/official/auth/login/step2', payload).pipe(
+    return this.http.post<{ success: boolean }>(API_ENDPOINTS.OFFICIAL.AUTH.LOGIN_STEP2, payload).pipe(
       switchMap(() => this.checkSession())
     );
   }
