@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog'; // 1. Import MatDialog
 import { RouterLink } from '@angular/router';
 import { ArrowLeft, LucideAngularModule } from 'lucide-angular';
 
 import { CitizenPayload } from '@core/models/citizen.model';
 import { CitizenService } from '@core/services/citizen.service';
+import { AppModalComponent } from '../../../components/app-modal/app-modal.component';
 import { CitizenFormComponent } from './components/citizen-form/citizen-form.component';
 import { CitizenSummaryComponent, RegistrationSummary } from './components/citizen-summary/citizen-summary.component';
 
@@ -23,13 +25,14 @@ import { CitizenSummaryComponent, RegistrationSummary } from './components/citiz
 })
 export class CitizenRegistrationComponent {
   private readonly fb = inject(FormBuilder);
+  private readonly dialog = inject(MatDialog); // 3. Wstrzyknięcie serwisu dialogu
+  private readonly citizenService = inject(CitizenService);
 
   readonly icons = { ArrowLeft };
 
   readonly isSubmitting = signal(false);
   readonly summaryData = signal<RegistrationSummary | null>(null);
   readonly photoPreview = signal<string | null>(null);
-  private readonly citizenService = inject(CitizenService);
 
   readonly registrationForm = this.fb.nonNullable.group({
     pesel: ['89010112345', [Validators.required, Validators.pattern(/^\d{11}$/)]],
@@ -99,6 +102,22 @@ export class CitizenRegistrationComponent {
       error: (err) => {
         console.error('Błąd rejestracji obywatela:', err);
         this.isSubmitting.set(false);
+
+        // Wyciągamy komunikat z odpowiedzi backendu (lub ustawiamy domyślny, jeśli brak struktury)
+        const errorMessage = err?.error?.message || 'Wystąpił nieoczekiwany błąd podczas komunikacji z systemem centralnym.';
+        const errorCode = err?.error?.code ? `[Kod: ${err.error.code}]` : '';
+
+        // Dynamiczne otwarcie modala z treścią z backendu
+        this.dialog.open(AppModalComponent, {
+          width: '450px',
+          data: {
+            title: `Błąd rejestracji ${errorCode}`,
+            message: errorMessage,
+            confirmText: 'Zamknij',
+            cancelText: 'Wróć do edycji',
+            isDestructive: true
+          }
+        });
       }
     });
   }

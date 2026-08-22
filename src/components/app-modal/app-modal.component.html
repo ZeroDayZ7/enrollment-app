@@ -1,0 +1,21 @@
+<div class="p-6 bg-app-surface text-app-text-main rounded-xl">
+  <h2 mat-dialog-title class="text-xl font-semibold mb-2">
+    {{ data.title }}
+  </h2>
+
+  <mat-dialog-content class="py-2">
+    <p class="text-sm text-app-text-muted leading-relaxed">
+      {{ data.message }}
+    </p>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="gap-3 mt-4 pt-2 border-t border-app-border">
+    <button mat-button (click)="onCancel()">
+      {{ data.cancelText || 'Anuluj' }}
+    </button>
+
+    <button mat-flat-button [color]="data.isDestructive ? 'warn' : 'primary'" (click)="onConfirm()">
+      {{ data.confirmText || 'Potwierdź' }}
+    </button>
+  </mat-dialog-actions>
+</div>
