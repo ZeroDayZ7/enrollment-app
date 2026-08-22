@@ -1,8 +1,7 @@
-<!-- src/app/features/official/citizen-registration/citizen-registration.component.html -->
 <div class="max-w-4xl mx-auto space-y-6">
 
-  <!-- Pasek powrotu (ukryty podczas drukowania) -->
-  <div class="flex items-center justify-between print:hidden">
+  <!-- Pasek powrotu -->
+  <div class="flex items-center justify-between">
     <a routerLink="/official/dashboard"
       class="inline-flex items-center gap-2 text-xs font-medium text-app-text-muted hover:text-app-text-main transition-colors">
       <lucide-icon [img]="icons.ArrowLeft" class="w-4 h-4"></lucide-icon>
@@ -11,227 +10,18 @@
     <span class="text-xs font-mono text-app-text-muted">SYSTEM ID: REG-SEC-v2</span>
   </div>
 
+  <!-- Przełączanie widoków w osobnym komponencie kontenerowym -->
   @if (summaryData(); as summary) {
-  <!-- WIDOK DOKUMENTU / UMOWY DO DRUKU -->
-  <div
-    class="bg-app-surface border border-app-border rounded-2xl p-6 sm:p-10 text-app-text-main space-y-8 shadow-2xl transition-colors duration-200 print:bg-white print:text-black print:border-none print:shadow-none print:p-0">
 
-    <!-- Nagłówek Umowy -->
-    <div class="flex items-start justify-between border-b border-app-border print:border-black pb-6">
-      <div>
-        <h1 class="text-xl font-bold uppercase tracking-wider print:text-black">Potwierdzenie Rejestracji i Umowa Usługi
-        </h1>
-        <p class="text-xs text-app-text-muted print:text-gray-600 mt-1">Tożsamość Cyfrowa Obywatela • System Zaufany</p>
-      </div>
-      <div class="text-right font-mono text-xs text-app-text-muted print:text-gray-700">
-        <p>Data: {{ summary.registeredAt | date:'yyyy-MM-dd HH:mm' }}</p>
-        <p class="text-app-primary print:text-black font-semibold">STATUS: AKTYWNE (OCZEKUJE)</p>
-      </div>
-    </div>
+  <app-citizen-summary [summary]="summary" (reset)="resetForm()">
+  </app-citizen-summary>
 
-    <!-- Dane Obywatela -->
-    <div class="grid grid-cols-2 gap-6 text-xs border-b border-app-border print:border-black pb-6">
-      <div>
-        <p class="text-app-text-muted print:text-gray-500 font-medium uppercase mb-1">Dane Obywatela</p>
-        <p class="text-base font-bold text-app-text-main print:text-black">{{ summary.firstName }} {{ summary.lastName
-          }}
-        </p>
-        <p class="font-mono text-app-text-main/80 print:text-gray-800 mt-1">PESEL: {{ summary.pesel }}</p>
-      </div>
-      <div>
-        <p class="text-app-text-muted print:text-gray-500 font-medium uppercase mb-1">Dane Kontaktowe</p>
-        <p class="text-app-text-main print:text-black">E-mail: {{ summary.email }}</p>
-        <p class="text-app-text-main print:text-black">Tel: {{ summary.phone }}</p>
-      </div>
-    </div>
-
-    <!-- Sekcja Bezpieczeństwa (Kody PUK i Aktywacyjny) -->
-    <div class="bg-app-bg border border-app-warning/30 rounded-xl p-5 print:bg-gray-100 print:border-black space-y-3">
-      <div
-        class="flex items-center gap-2 text-app-warning print:text-black font-semibold text-xs uppercase tracking-wider">
-        <lucide-icon [img]="icons.ShieldAlert" class="w-4 h-4 print:hidden"></lucide-icon>
-        <span>Poufne Kody Bezpieczeństwa Obywatela</span>
-      </div>
-      <p class="text-xs text-app-text-muted print:text-gray-800">
-        Przekaż poniższe kody obywatelowi. Kod PUK służy do odzyskiwania dostępu do konta, a kod aktywacyjny do
-        pierwszego zalogowania i uzupełnienia danych dokumentu tożsamości.
-      </p>
-      <div class="grid grid-cols-2 gap-4 pt-2 font-mono">
-        <div class="bg-app-surface print:bg-white p-3 rounded-lg border border-app-border print:border-gray-400">
-          <span class="block text-[10px] text-app-text-muted print:text-gray-600 uppercase">KOD PUK (AWARYJNY)</span>
-          <span class="text-lg font-bold text-app-warning print:text-black tracking-widest">{{ summary.pukCode }}</span>
-        </div>
-        <div class="bg-app-surface print:bg-white p-3 rounded-lg border border-app-border print:border-gray-400">
-          <span class="block text-[10px] text-app-text-muted print:text-gray-600 uppercase">KOD AKTYWACYJNY
-            APLIKACJI</span>
-          <span class="text-lg font-bold text-app-primary print:text-black tracking-widest">{{ summary.activationCode
-            }}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Oświadczenie i Regulamin -->
-    <div class="text-[11px] text-app-text-muted print:text-gray-700 space-y-2 text-justify">
-      <p class="font-semibold text-app-text-main print:text-black uppercase">Warunki świadczenia usług tożsamości
-        cyfrowej:
-      </p>
-      <p>
-        1. Obywatel zobowiązuje się do zachowania poufności kodu PUK oraz kodu aktywacyjnego. Urząd nie odpowiada za
-        skutki udostępnienia kodów osobom trzecim.
-      </p>
-      <p>
-        2. Po zalogowaniu się do portalu obywatela wymagane jest przeprowadzenie pierwszego uzupełnienia profilu
-        (weryfikacja dokumentu tożsamości).
-      </p>
-    </div>
-
-    <!-- Podpisy -->
-    <div class="grid grid-cols-2 gap-12 pt-12 text-center text-xs text-app-text-muted print:text-black">
-      <div class="border-t border-app-border print:border-black pt-2">
-        Podpis Obywatela
-      </div>
-      <div class="border-t border-app-border print:border-black pt-2">
-        Pieczęć i Podpis Urzędnika
-      </div>
-    </div>
-
-    <!-- Przyciski Akcji (Ukryte przy drukowaniu) -->
-    <div class="pt-6 border-t border-app-border flex items-center justify-between print:hidden">
-      <button (click)="resetForm()"
-        class="px-4 py-2 bg-app-surface-hover hover:opacity-80 text-app-text-main text-xs font-medium rounded-xl border border-app-border transition-all">
-        Rejestruj Następnego
-      </button>
-      <div class="flex items-center gap-3">
-        <button (click)="printContract()"
-          class="px-5 py-2.5 bg-app-success hover:opacity-90 text-white text-xs font-semibold rounded-xl transition-all shadow-lg shadow-app-success/20 flex items-center gap-2">
-          <lucide-icon [img]="icons.Printer" class="w-4 h-4"></lucide-icon>
-          Drukuj Umowę i Kody
-        </button>
-      </div>
-    </div>
-
-  </div>
   } @else {
-  <!-- FORMULARZ REJESTRACJI -->
-  <div class="bg-app-surface border border-app-border rounded-2xl p-6 sm:p-8 shadow-xl transition-colors duration-200">
-    <div class="flex items-center justify-between pb-6 mb-6 border-b border-app-border">
-      <div class="flex items-center gap-3">
-        <div
-          class="w-10 h-10 bg-app-primary/10 border border-app-primary/20 text-app-primary rounded-xl flex items-center justify-center">
-          <lucide-icon [img]="icons.UserPlus" class="w-5 h-5"></lucide-icon>
-        </div>
-        <div>
-          <h1 class="text-lg font-bold text-app-text-main">Rejestracja Obywatela</h1>
-          <p class="text-xs text-app-text-muted">Etap 1: Utworzenie konta, zdjęcie biometryczne i umowa</p>
-        </div>
-      </div>
-      <span
-        class="text-[10px] font-mono bg-app-bg text-app-text-muted px-2.5 py-1 rounded-lg border border-app-border">MOCK
-        DATA READY</span>
-    </div>
 
-    <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" class="space-y-6">
+  <app-citizen-form [form]="registrationForm" [photoPreview]="photoPreview()" [isSubmitting]="isSubmitting()"
+    (submit)="onSubmit()" (fileSelected)="onFileSelected($event)">
+  </app-citizen-form>
 
-      <!-- SEKCJA UPLOADU ZDJĘCIA -->
-      <div>
-        <h2 class="text-xs font-semibold text-app-text-muted uppercase tracking-wider mb-3">1. Zdjęcie Biometryczne
-          Obywatela
-        </h2>
-        <div class="flex items-start gap-6 bg-app-bg p-4 rounded-xl border border-app-border">
-          <div
-            class="w-28 h-36 bg-app-surface border-2 border-dashed border-app-border rounded-xl flex flex-col items-center justify-center overflow-hidden relative group">
-            @if (photoPreview()) {
-            <img [src]="photoPreview()" alt="Podgląd zdjęcia" class="w-full h-full object-cover" />
-            } @else {
-            <lucide-icon [img]="icons.ImageIcon" class="w-8 h-8 text-app-text-muted mb-2"></lucide-icon>
-            <span class="text-[10px] text-app-text-muted text-center px-2">Brak zdjęcia</span>
-            }
-          </div>
-
-          <div class="flex-1 space-y-3">
-            <p class="text-xs text-app-text-main">
-              Wgraj zdjęcie wykonane na stanowisku urzędowym lub dołączone do wniosku papierowego.
-            </p>
-            <label
-              class="inline-flex items-center gap-2 px-4 py-2 bg-app-surface hover:bg-app-surface-hover text-app-text-main text-xs font-medium rounded-xl border border-app-border cursor-pointer transition-colors">
-              <lucide-icon [img]="icons.Upload" class="w-4 h-4 text-app-primary"></lucide-icon>
-              <span>Wybierz plik ze zdjęciem</span>
-              <input type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden" />
-            </label>
-            <p class="text-[10px] text-app-text-muted font-mono">
-              Szyfrowanie: SSE-KMS (AES-256) • Przechowywanie: S3 Object Store
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- DANE PODSTAWOWE -->
-      <div>
-        <h2 class="text-xs font-semibold text-app-text-muted uppercase tracking-wider mb-3">2. Dane Identyfikacyjne</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-medium text-app-text-muted mb-1.5">PESEL</label>
-            <input type="text" formControlName="pesel" maxlength="11"
-              class="w-full bg-app-bg border border-app-border rounded-xl px-4 py-2.5 text-sm text-app-text-main font-mono placeholder-app-text-muted/60 focus:outline-none focus:border-app-primary focus:ring-2 focus:ring-app-primary/20 transition-all duration-150" />
-          </div>
-
-          <div>
-            <label class="block text-xs font-medium text-app-text-muted mb-1.5">Imię</label>
-            <input type="text" formControlName="firstName"
-              class="w-full bg-app-bg border border-app-border rounded-xl px-4 py-2.5 text-sm text-app-text-main focus:outline-none focus:border-app-primary focus:ring-2 focus:ring-app-primary/20 transition-all duration-150" />
-          </div>
-
-          <div>
-            <label class="block text-xs font-medium text-app-text-muted mb-1.5">Nazwisko</label>
-            <input type="text" formControlName="lastName"
-              class="w-full bg-app-bg border border-app-border rounded-xl px-4 py-2.5 text-sm text-app-text-main focus:outline-none focus:border-app-primary focus:ring-2 focus:ring-app-primary/20 transition-all duration-150" />
-          </div>
-
-          <div>
-            <label class="block text-xs font-medium text-app-text-muted mb-1.5">Adres E-mail</label>
-            <input type="email" formControlName="email"
-              class="w-full bg-app-bg border border-app-border rounded-xl px-4 py-2.5 text-sm text-app-text-main focus:outline-none focus:border-app-primary focus:ring-2 focus:ring-app-primary/20 transition-all duration-150" />
-          </div>
-
-          <div>
-            <label class="block text-xs font-medium text-app-text-muted mb-1.5">Numer Telefonu</label>
-            <input type="tel" formControlName="phone"
-              class="w-full bg-app-bg border border-app-border rounded-xl px-4 py-2.5 text-sm text-app-text-main focus:outline-none focus:border-app-primary focus:ring-2 focus:ring-app-primary/20 transition-all duration-150" />
-          </div>
-        </div>
-      </div>
-
-      <!-- ZGODA NA UMOWĘ -->
-      <div class="pt-2">
-        <label class="flex items-start gap-3 cursor-pointer">
-          <input type="checkbox" formControlName="acceptTerms"
-            class="mt-0.5 rounded border-app-border bg-app-bg text-app-primary focus:ring-app-primary/20" />
-          <span class="text-xs text-app-text-muted">
-            Obywatel wyraża zgodę na przetwarzanie danych osobowych oraz akceptuje regulamin świadczenia usług
-            tożsamości cyfrowej.
-          </span>
-        </label>
-      </div>
-
-      <!-- PRZYCISKI -->
-      <div class="pt-4 border-t border-app-border flex justify-end gap-3">
-        <a routerLink="/official/dashboard"
-          class="px-5 py-2.5 bg-app-surface-hover hover:opacity-80 text-app-text-main text-xs font-medium rounded-xl border border-app-border transition-colors">
-          Anuluj
-        </a>
-        <button type="submit" [disabled]="isSubmitting()"
-          class="px-5 py-2.5 bg-app-primary hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-semibold rounded-xl transition-all shadow-lg shadow-app-primary/20 flex items-center gap-2">
-          @if (isSubmitting()) {
-          <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-          <span>Generowanie Umowy i Kodu PUK...</span>
-          } @else {
-          <span>Zatwierdź i Wygeneruj Umowę</span>
-          }
-        </button>
-      </div>
-
-    </form>
-  </div>
   }
 
 </div>

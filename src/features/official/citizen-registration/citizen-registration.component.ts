@@ -1,58 +1,33 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import {
-  ArrowLeft,
-  CheckCircle2,
-  FileCheck,
-  Image as ImageIcon,
-  KeyRound,
-  LucideAngularModule,
-  Printer,
-  ShieldAlert,
-  Upload,
-  UserPlus
-} from 'lucide-angular';
+import { ArrowLeft, LucideAngularModule } from 'lucide-angular';
 
-interface RegistrationSummary {
-  pesel: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  pukCode: string;
-  activationCode: string;
-  registeredAt: Date;
-  photoPreviewUrl: string | null;
-}
+import { CitizenFormComponent } from './components/citizen-form/citizen-form.component';
+import { CitizenSummaryComponent, RegistrationSummary } from './components/citizen-summary/citizen-summary.component';
 
 @Component({
   selector: 'app-citizen-registration',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, LucideAngularModule],
+  imports: [
+    CommonModule,
+    RouterLink,
+    LucideAngularModule,
+    CitizenFormComponent,
+    CitizenSummaryComponent
+  ],
   templateUrl: './citizen-registration.component.html'
 })
 export class CitizenRegistrationComponent {
   private readonly fb = inject(FormBuilder);
 
-  readonly icons = {
-    ArrowLeft,
-    UserPlus,
-    CheckCircle2,
-    Upload,
-    ImageIcon,
-    Printer,
-    KeyRound,
-    FileCheck,
-    ShieldAlert
-  };
+  readonly icons = { ArrowLeft };
 
   readonly isSubmitting = signal(false);
   readonly summaryData = signal<RegistrationSummary | null>(null);
   readonly photoPreview = signal<string | null>(null);
 
-  // Domyślne dane testowe zapobiegające ciągłemu wpisywaniu
   readonly registrationForm = this.fb.nonNullable.group({
     pesel: ['89010112345', [Validators.required, Validators.pattern(/^\d{11}$/)]],
     firstName: ['Jan', [Validators.required, Validators.minLength(2)]],
@@ -82,7 +57,6 @@ export class CitizenRegistrationComponent {
 
     this.isSubmitting.set(true);
 
-    // Symulacja rejestracji i generowania bezpiecznych kodów (PUK / Aktywacja)
     setTimeout(() => {
       const rawForm = this.registrationForm.getRawValue();
 
@@ -100,10 +74,6 @@ export class CitizenRegistrationComponent {
 
       this.isSubmitting.set(false);
     }, 600);
-  }
-
-  printContract(): void {
-    window.print();
   }
 
   resetForm(): void {
