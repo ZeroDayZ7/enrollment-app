@@ -14,7 +14,7 @@ export class CitizenFormComponent {
   photoPreview = input<string | null>(null);
   isSubmitting = input<boolean>(false);
 
-  submit = output<void>();
+  formSubmit = output<void>();
   fileSelected = output<Event>();
 
   readonly icons = { UserPlus, ImageIcon, Upload };
