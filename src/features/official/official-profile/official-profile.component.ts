@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { Activity, CheckCircle2, Key, Lock, LucideAngularModule, Shield, User } from 'lucide-angular';
+import { Activity, CircleCheck, Key, Lock, LucideAngularModule, Shield, User } from 'lucide-angular';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -19,6 +19,6 @@ export class OfficialProfileComponent {
     Key,
     Lock,
     Activity,
-    CheckCircle2
+    CircleCheck
   };
 }

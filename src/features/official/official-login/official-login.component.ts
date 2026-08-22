@@ -29,7 +29,7 @@ export class OfficialLoginComponent {
   readonly loadedCard = signal<DevCardFile | null>(null);
 
   readonly loginForm = this.fb.nonNullable.group({
-    email: ['urzednik@plus.pl', [Validators.required, Validators.minLength(3)]],
+    email: ['officer@plus.pl', [Validators.required, Validators.minLength(3)]],
     password: ['Zaq1@wsx', [Validators.required, Validators.minLength(4)]]
   });
 

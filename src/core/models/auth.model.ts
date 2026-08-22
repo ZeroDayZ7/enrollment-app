@@ -5,12 +5,15 @@ export interface LoginRequest {
 
 export interface UserProfile {
   user_id: string;
+  username: string;
   email: string;
-  display_name: string;
-  status: string;
   role: string;
   permissions: string[];
-  last_login: string;
+  institution_id?: string;
+  department_id?: string;
+  employee_number?: string;
+  status?: string;
+  last_login?: string;
 }
 
 export interface LoginStep1Response {
