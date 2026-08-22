@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
@@ -19,6 +19,9 @@ export class AuthService {
   readonly permissions = computed(() => this.currentUser()?.permissions ?? []);
   readonly role = computed(() => this.currentUser()?.role ?? null);
 
+  // Przechowywanie tymczasowego setupToken w pamięci RAM
+  private readonly setupToken = signal<string | null>(null);
+
   private isRefreshing = false;
   private refreshTokenSubject$: Observable<void> | null = null;
 
@@ -32,16 +35,36 @@ export class AuthService {
     );
   }
 
-  // Krok 1: Weryfikacja Loginu + Hasła -> Zwrot Challenge
+  // Krok 1: Weryfikacja Loginu + Hasła -> Przechwycenie setup_token i challenge
   loginStep1(credentials: LoginRequest): Observable<LoginStep1Response> {
-    return this.http.post<LoginStep1Response>(API_ENDPOINTS.OFFICIAL.AUTH.LOGIN, credentials);
+    return this.http.post<LoginStep1Response>(API_ENDPOINTS.OFFICIAL.AUTH.LOGIN, credentials).pipe(
+      tap((response) => {
+        if (response?.setup_token) {
+          this.setupToken.set(response.setup_token);
+        }
+      })
+    );
   }
 
-  // Krok 2: Weryfikacja Podpisu Kryptograficznego
+  // Krok 2: Przekazanie setup_token w Bearer i weryfikacja podpisu
   loginStep2(payload: LoginStep2Request): Observable<UserProfile | null> {
-    return this.http.post<{ success: boolean }>(API_ENDPOINTS.OFFICIAL.AUTH.LOGIN_STEP2, payload).pipe(
-      switchMap(() => this.checkSession())
-    );
+    const token = this.setupToken();
+
+    // Jeśli mamy token w RAM, budujemy nagłówek Authorization
+    const headers = token
+      ? new HttpHeaders({ Authorization: `Bearer ${token}` })
+      : undefined;
+
+    return this.http
+      .post<{ success: boolean }>(API_ENDPOINTS.OFFICIAL.AUTH.LOGIN_STEP2, payload, { headers })
+      .pipe(
+        tap(() => this.clearSetupToken()), // Czyszczenie tokenu po użyciu
+        switchMap(() => this.checkSession())
+      );
+  }
+
+  clearSetupToken(): void {
+    this.setupToken.set(null);
   }
 
   hasPermission(permission: string): boolean {
@@ -88,17 +111,20 @@ export class AuthService {
 
   logout(redirectUrl: string = APP_ROUTES.OFFICIAL.LOGIN): void {
     this.currentUser.set(null);
+    this.clearSetupToken();
 
-    this.http.post(API_ENDPOINTS.OFFICIAL.AUTH.LOGOUT, {}).pipe(
-      catchError(() => of(null))
-    ).subscribe({
-      next: () => this.clearSessionAndRedirect(redirectUrl),
-      error: () => this.clearSessionAndRedirect(redirectUrl)
-    });
+    this.http
+      .post(API_ENDPOINTS.OFFICIAL.AUTH.LOGOUT, {})
+      .pipe(catchError(() => of(null)))
+      .subscribe({
+        next: () => this.clearSessionAndRedirect(redirectUrl),
+        error: () => this.clearSessionAndRedirect(redirectUrl)
+      });
   }
 
   clearSessionAndRedirect(redirectUrl: string = APP_ROUTES.OFFICIAL.LOGIN): void {
     this.currentUser.set(null);
+    this.clearSetupToken();
     if (this.router.url !== redirectUrl) {
       this.router.navigate([redirectUrl]);
     }

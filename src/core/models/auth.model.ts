@@ -21,8 +21,8 @@ export interface LoginStep1Response {
 }
 
 export interface LoginStep2Request {
-  userId: string;
-  cardSerialNumber: string;
+  user_id: string;
+  card_serial_number: string;
   challenge: string;
   signature: string;
 }

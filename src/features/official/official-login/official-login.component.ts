@@ -3,6 +3,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { APP_ROUTES } from '../../../core/constants/app-routes';
+import { LoginStep2Request } from '../../../core/models/auth.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { CryptoService, DevCardFile } from '../../../core/services/crypto.service';
 
@@ -91,7 +92,12 @@ export class OfficialLoginComponent {
     try {
       const card = await this.cryptoService.parseCardFile(input.files[0]);
       this.loadedCard.set(card);
-      this.userId.set(card.userId);
+
+      // Zapisujemy userId z karty bezpośrednio w stanie komponentu
+      if (card?.userId) {
+        this.userId.set(card.userId);
+      }
+
       this.errorMessage.set(null);
       console.log('✅ Karta załadowana do stanu komponentu:', card);
     } catch (err: any) {
@@ -105,17 +111,23 @@ export class OfficialLoginComponent {
     console.group('🚀 [Login Component] Submit Krok 2');
     const card = this.loadedCard();
     const challenge = this.challenge();
-    const userId = this.userId();
+
+    // Zabezpieczenie: Pobierz userId z sygnału lub bezpośrednio z obiektu karty
+    const currentUserId = this.userId() || card?.userId;
 
     console.log('Stan przed wysłaniem Step 2:', {
       cardLoaded: !!card,
       challenge,
-      userId,
+      userId: currentUserId,
       cardSerialNumber: card?.cardSerialNumber
     });
 
-    if (!card || !challenge || !userId) {
-      console.warn('⚠️ Brak wymaganych danych do Step 2');
+    if (!card || !challenge || !currentUserId) {
+      console.warn('⚠️ Brak wymaganych danych do Step 2:', {
+        cardLoaded: !!card,
+        challenge: !!challenge,
+        userId: !!currentUserId
+      });
       this.errorMessage.set('Wczytaj plik karty urzędnika.');
       console.groupEnd();
       return;
@@ -127,11 +139,11 @@ export class OfficialLoginComponent {
     try {
       const signature = await this.cryptoService.signChallenge(challenge, card.privateKey);
 
-      const payload = {
-        userId,
-        cardSerialNumber: card.cardSerialNumber,
-        challenge,
-        signature
+      const payload: LoginStep2Request = {
+        user_id: currentUserId,
+        card_serial_number: card.cardSerialNumber,
+        challenge: challenge,
+        signature: signature
       };
 
       console.log('📤 Wysłanie payloadu do Step 2:', payload);

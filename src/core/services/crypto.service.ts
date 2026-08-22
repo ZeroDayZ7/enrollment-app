@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ed25519 } from '@noble/curves/ed25519.js';
-import { bytesToHex, hexToBytes } from '@noble/curves/utils.js';
+import { hexToBytes } from '@noble/curves/utils.js';
 
 export interface DevCardFile {
   cardSerialNumber: string;
@@ -46,46 +46,30 @@ export class CryptoService {
     return json as DevCardFile;
   }
 
-  private base64UrlToUint8Array(base64Url: string): Uint8Array {
-    // 1. Zamiana znaków Base64URL na standardowy Base64
-    let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-
-    // 2. Dopełnienie znakiem '=' do wielokrotności 4
-    while (base64.length % 4 !== 0) {
-      base64 += '=';
-    }
-
-    // 3. Bezpieczne dekodowanie ciągu Base64
-    const binaryString = window.atob(base64);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes;
-  }
-
-  async signChallenge(challengeBase64: string, privateKeyHex: string): Promise<string> {
+  async signChallenge(challenge: string, privateKeyHex: string): Promise<string> {
     console.group('🔑 [CryptoService] Podpisywanie wyzwania');
-    console.log('📥 Input Challenge (Base64):', challengeBase64);
+    console.log('📥 Input Challenge:', challenge);
     console.log('📥 Input PrivateKey (Hex):', privateKeyHex ? `${privateKeyHex.substring(0, 10)}...` : 'BRAK');
 
     try {
-      // 1. Dekodowanie Base64
-      const challengeBytes = this.base64UrlToUint8Array(challengeBase64);
+      // 1. Konwersja ciągu wyzwania na bajty UTF-8 (zgodne z backendowym []byte(storedChallenge))
+      const challengeBytes = new TextEncoder().encode(challenge);
+      console.log('🔢 Bajty challenge (length):', challengeBytes.length);
 
-      console.log('🔢 Bajty challenge (length):', challengeBytes.length, challengeBytes);
-
-      // 2. Dekodowanie Private Key Hex
+      // 2. Dekodowanie klucza prywatnego z formatu Hex
       const privateKeyBytes = hexToBytes(privateKeyHex);
       console.log('🔢 Bajty klucza prywatnego (length):', privateKeyBytes.length);
 
-      // 3. Generowanie podpisu Ed25519
+      // 3. Generowanie podpisu Ed25519 za pomocą pierwszych 32 bajtów klucza
       const signatureBytes = ed25519.sign(challengeBytes, privateKeyBytes.slice(0, 32));
-      const signatureHex = bytesToHex(signatureBytes);
 
-      console.log('✅ Wygenerowany podpis (Hex):', signatureHex);
+      // 4. Konwersja wygenerowanego podpisu do Base64 (backend oczekuje base64.StdEncoding.DecodeString)
+      const signatureBase64 = btoa(String.fromCharCode(...signatureBytes));
+
+      console.log('✅ Wygenerowany podpis (Base64):', signatureBase64);
       console.groupEnd();
-      return signatureHex;
+
+      return signatureBase64;
     } catch (err) {
       console.error('❌ Błąd podczas generowania podpisu kryptograficznego:', err);
       console.groupEnd();
