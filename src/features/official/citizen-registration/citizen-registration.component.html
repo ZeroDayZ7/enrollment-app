@@ -1,0 +1,27 @@
+<div class="max-w-4xl mx-auto space-y-6">
+
+  <!-- Pasek powrotu -->
+  <div class="flex items-center justify-between">
+    <a routerLink="/official/dashboard"
+      class="inline-flex items-center gap-2 text-xs font-medium text-app-text-muted hover:text-app-text-main transition-colors">
+      <lucide-icon [img]="icons.ArrowLeft" class="w-4 h-4"></lucide-icon>
+      Powrót do pulpitu
+    </a>
+    <span class="text-xs font-mono text-app-text-muted">SYSTEM ID: REG-SEC-v2</span>
+  </div>
+
+  <!-- Przełączanie widoków w osobnym komponencie kontenerowym -->
+  @if (summaryData(); as summary) {
+
+  <app-citizen-summary [summary]="summary" (reset)="resetForm()">
+  </app-citizen-summary>
+
+  } @else {
+
+  <app-citizen-form [form]="registrationForm" [photoPreview]="photoPreview()" [isSubmitting]="isSubmitting()"
+    (formSubmit)="onSubmit()" (fileSelected)="onFileSelected($event)">
+  </app-citizen-form>
+
+  }
+
+</div>

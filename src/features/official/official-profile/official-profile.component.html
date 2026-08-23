@@ -1,0 +1,117 @@
+<div class="max-w-5xl mx-auto space-y-6">
+
+  <!-- Nagłówek profilu -->
+  <div
+    class="bg-app-surface border border-app-border rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm transition-colors duration-200">
+    <div class="flex items-center gap-4">
+      <div
+        class="w-16 h-16 rounded-full bg-app-primary/10 border border-app-primary/20 text-app-primary flex items-center justify-center font-bold text-xl">
+        {{ (user()?.username || user()?.email || 'OP').substring(0, 2).toUpperCase() }}
+      </div>
+      <div>
+        <h2 class="text-xl font-bold text-app-text-main">{{ user()?.username || user()?.email }}</h2>
+        <p class="text-sm text-app-text-muted">{{ user()?.email }}</p>
+        <div class="flex items-center gap-2 mt-1">
+          <span
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-app-success/10 text-app-success border border-app-success/20">
+            <span class="w-1.5 h-1.5 rounded-full bg-app-success mr-1.5"></span>
+            {{ user()?.status || 'AKTYWNY' }}
+          </span>
+          <span
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-app-primary/10 text-app-primary border border-app-primary/20">
+            {{ user()?.role }}
+          </span>
+          @if (user()?.employee_number) {
+          <span
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-app-bg border border-app-border text-app-text-main">
+            Nr: {{ user()?.employee_number }}
+          </span>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Szczegóły konta i sesji -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <!-- Panel danych identyfikacyjnych -->
+    <div
+      class="bg-app-surface border border-app-border rounded-xl p-6 space-y-4 shadow-sm transition-colors duration-200">
+      <div class="flex items-center gap-2 border-b border-app-border pb-3">
+        <lucide-icon [img]="icons.User" class="w-5 h-5 text-app-primary"></lucide-icon>
+        <h3 class="font-semibold text-app-text-main">Informacje Operacyjne</h3>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs text-app-text-muted font-medium uppercase tracking-wider">Identyfikator
+            Systemowy</label>
+          <div
+            class="mt-1 p-2.5 bg-app-bg border border-app-border rounded-lg text-xs font-mono text-app-text-main break-all select-all transition-colors duration-200">
+            {{ user()?.user_id }}
+          </div>
+        </div>
+
+        @if (user()?.institution_id) {
+        <div>
+          <label class="text-xs text-app-text-muted font-medium uppercase tracking-wider">ID Instytucji</label>
+          <div
+            class="mt-1 p-2 bg-app-bg border border-app-border rounded-lg text-xs font-mono text-app-text-main break-all select-all">
+            {{ user()?.institution_id }}
+          </div>
+        </div>
+        }
+
+        @if (user()?.department_id) {
+        <div>
+          <label class="text-xs text-app-text-muted font-medium uppercase tracking-wider">ID Departamentu</label>
+          <div
+            class="mt-1 p-2 bg-app-bg border border-app-border rounded-lg text-xs font-mono text-app-text-main break-all select-all">
+            {{ user()?.department_id }}
+          </div>
+        </div>
+        }
+
+        <div>
+          <label class="text-xs text-app-text-muted font-medium uppercase tracking-wider">Adres E-mail</label>
+          <div class="mt-1 text-sm font-medium text-app-text-main">
+            {{ user()?.email }}
+          </div>
+        </div>
+
+        @if (user()?.last_login) {
+        <div>
+          <label class="text-xs text-app-text-muted font-medium uppercase tracking-wider">Ostatnie Logowanie</label>
+          <div class="mt-1 text-sm font-medium text-app-text-main flex items-center gap-2">
+            <lucide-icon [img]="icons.Activity" class="w-4 h-4 text-app-success"></lucide-icon>
+            {{ user()?.last_login | date:'yyyy-MM-dd HH:mm:ss' }}
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Panel przypisanych uprawnień -->
+    <div
+      class="bg-app-surface border border-app-border rounded-xl p-6 space-y-4 shadow-sm transition-colors duration-200">
+      <div class="flex items-center gap-2 border-b border-app-border pb-3">
+        <lucide-icon [img]="icons.Key" class="w-5 h-5 text-app-primary"></lucide-icon>
+        <h3 class="font-semibold text-app-text-main">Aktywne Uprawnienia (Permissions)</h3>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        @for (perm of user()?.permissions; track perm) {
+        <span
+          class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono bg-app-bg border border-app-border text-app-text-main transition-colors duration-200">
+          <lucide-icon [img]="icons.CircleCheck" class="w-3.5 h-3.5 text-app-primary"></lucide-icon>
+          {{ perm }}
+        </span>
+        } @empty {
+        <p class="text-sm text-app-text-muted">Brak aktywnych uprawnień.</p>
+        }
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,55 @@
+<!-- src/app/features/official/official-settings/official-settings.component.html -->
+<div class="max-w-4xl mx-auto space-y-6">
+
+  <!-- Nagłówek Podstrony -->
+  <div
+    class="flex items-center gap-3 bg-app-surface border border-app-border rounded-2xl p-6 shadow-sm transition-colors duration-200">
+    <div
+      class="w-12 h-12 bg-app-primary/10 border border-app-primary/20 text-app-primary rounded-xl flex items-center justify-center">
+      <lucide-icon [img]="icons.Settings" class="w-6 h-6"></lucide-icon>
+    </div>
+    <div>
+      <h1 class="text-xl font-bold text-app-text-main">Ustawienia Systemowe</h1>
+      <p class="text-xs text-app-text-muted">Zarządzaj preferencjami interfejsu oraz konfiguracją stanowiska</p>
+    </div>
+  </div>
+
+  <!-- Sekcja: Wygląd i Motyw -->
+  <div
+    class="bg-app-surface border border-app-border rounded-2xl p-6 space-y-6 shadow-xl transition-colors duration-200">
+    <div class="flex items-center gap-2 pb-4 border-b border-app-border">
+      <lucide-icon [img]="icons.Palette" class="w-5 h-5 text-app-primary"></lucide-icon>
+      <h2 class="text-sm font-bold text-app-text-main uppercase tracking-wider">Wygląd i Motyw</h2>
+    </div>
+
+    <!-- Przełącznik Dark Mode -->
+    <div
+      class="flex items-center justify-between bg-app-bg p-4 rounded-xl border border-app-border transition-colors duration-200">
+      <div class="flex items-center gap-3">
+        <div
+          class="w-9 h-9 rounded-lg bg-app-surface border border-app-border flex items-center justify-center text-app-text-main shadow-xs">
+          @if (themeService.isDarkMode()) {
+          <lucide-icon [img]="icons.Moon" class="w-5 h-5 text-indigo-400"></lucide-icon>
+          } @else {
+          <lucide-icon [img]="icons.Sun" class="w-5 h-5 text-amber-500"></lucide-icon>
+          }
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-app-text-main">Tryb Ciemny (Dark Mode)</p>
+          <p class="text-xs text-app-text-muted">Przełączaj pomiędzy ciemnym a jasnym motywem interfejsu</p>
+        </div>
+      </div>
+
+      <!-- Toggle Switch Button -->
+      <button type="button" (click)="themeService.toggleTheme()"
+        class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-app-primary/30"
+        [class.bg-app-primary]="themeService.isDarkMode()" [class.bg-app-border]="!themeService.isDarkMode()">
+        <span
+          class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out"
+          [class.translate-x-5]="themeService.isDarkMode()" [class.translate-x-0]="!themeService.isDarkMode()">
+        </span>
+      </button>
+    </div>
+  </div>
+
+</div>

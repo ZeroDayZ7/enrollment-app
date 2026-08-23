@@ -5,9 +5,9 @@ import { authGuard } from '../core/guards/auth.guard';
 @Component({
   standalone: true,
   template: `
-    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
-      <h2 class="text-lg font-semibold text-slate-100 mb-2">{{ title }}</h2>
-      <p class="text-sm text-slate-400">Moduł jest w trakcie budowy.</p>
+    <div class="bg-app-surface border border-app-border rounded-xl p-6 transition-colors duration-200">
+      <h2 class="text-lg font-semibold text-app-text-main mb-2">{{ title }}</h2>
+      <p class="text-sm text-app-text-muted">Moduł jest w trakcie budowy.</p>
     </div>
   `
 })
@@ -19,6 +19,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'official/dashboard', pathMatch: 'full' },
   {
     path: 'official/login',
+    title: 'Logowanie — Panel Urzędnika',
     loadComponent: () =>
       import('../features/official/official-login/official-login.component').then(
         (m) => m.OfficialLoginComponent
@@ -35,30 +36,65 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
         path: 'dashboard',
+        title: 'Pulpit — Panel Urzędnika',
         loadComponent: () =>
           import('../features/official/official-dashboard/official-dashboard.component').then(
             (m) => m.OfficialDashboardComponent
           )
       },
       {
-        path: 'applications',
-        component: PlaceholderComponent,
-        data: { title: 'Oczekujące wnioski' }
+        path: 'profile',
+        title: 'Moje Konto — Panel Urzędnika',
+        loadComponent: () =>
+          import('../features/official/official-profile/official-profile.component').then(
+            (m) => m.OfficialProfileComponent
+          )
       },
       {
-        path: 'contracts',
-        component: PlaceholderComponent,
-        data: { title: 'Rejestr umów' }
+        path: 'settings',
+        title: 'Ustawienia — Panel Urzędnika',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('../features/official/official-settings/official-settings.component').then(
+            (m) => m.OfficialSettingsComponent
+          )
+      },
+      {
+        path: 'citizens/register',
+        title: 'Rejestracja Obywatela — Panel Urzędnika',
+        canActivate: [authGuard],
+        data: { permissions: ['users.write'] },
+        loadComponent: () =>
+          import('../features/official/citizen-registration/citizen-registration.component').then(
+            (m) => m.CitizenRegistrationComponent
+          )
       },
       {
         path: 'verify',
         component: PlaceholderComponent,
-        data: { title: 'Weryfikacja QR' }
+        canActivate: [authGuard],
+        data: {
+          title: 'Weryfikacja QR',
+          permissions: ['users.read']
+        }
+      },
+      {
+        path: 'voting-tokens',
+        component: PlaceholderComponent,
+        canActivate: [authGuard],
+        data: {
+          title: 'Uprawnienia e-Voting',
+          permissions: ['messages.write']
+        }
       },
       {
         path: 'audit',
         component: PlaceholderComponent,
-        data: { title: 'Dziennik zdarzeń' }
+        canActivate: [authGuard],
+        data: {
+          title: 'Dziennik zdarzeń',
+          permissions: ['reports.view']
+        }
       }
     ]
   },

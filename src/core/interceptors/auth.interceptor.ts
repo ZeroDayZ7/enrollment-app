@@ -1,19 +1,35 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+// core/interceptors/auth.interceptor.ts
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { catchError, switchMap, throwError } from 'rxjs';
+import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { AuthService } from '../services/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-  const token = authService.accessToken();
 
-  if (token && !req.url.includes('/auth/login')) {
-    const authReq = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
+  const credentialsReq = req.clone({
+    withCredentials: true
+  });
+
+  return next(credentialsReq).pipe(
+    catchError((error: HttpErrorResponse) => {
+      const isAuthRequest =
+        req.url.includes(API_ENDPOINTS.OFFICIAL.AUTH.LOGIN) ||
+        req.url.includes(API_ENDPOINTS.OFFICIAL.AUTH.REFRESH) ||
+        req.url.includes(API_ENDPOINTS.OFFICIAL.AUTH.ME);
+
+      if (error.status === 401 && !isAuthRequest) {
+        return authService.refreshToken().pipe(
+          switchMap(() => next(credentialsReq)),
+          catchError((refreshError) => {
+            authService.logout();
+            return throwError(() => refreshError);
+          })
+        );
       }
-    });
-    return next(authReq);
-  }
 
-  return next(req);
+      return throwError(() => error);
+    })
+  );
 };

@@ -1,15 +1,31 @@
 export interface LoginRequest {
-  username: string;
-  pin: string;
+  email: string;
+  password: string | number[];
 }
 
 export interface UserProfile {
-  id: string;
+  user_id: string;
+  username: string;
+  email: string;
   role: string;
   permissions: string[];
+  institution_id?: string;
+  department_id?: string;
+  employee_number?: string;
+  status?: string;
+  last_login?: string;
 }
 
-export interface LoginResponse {
-  accessToken: string;
-  user: UserProfile;
+export interface LoginStep1Response {
+  type: string;
+  "2fa_required": boolean;
+  setup_token: string;
+  challenge: string;
+}
+
+export interface LoginStep2Request {
+  user_id: string;
+  card_serial_number: string;
+  challenge: string;
+  signature: string;
 }
