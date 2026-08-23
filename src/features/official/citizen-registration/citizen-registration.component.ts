@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog'; // 1. Import MatDialog
+import { MatDialog } from '@angular/material/dialog';
 import { RouterLink } from '@angular/router';
 import { ArrowLeft, LucideAngularModule } from 'lucide-angular';
 
@@ -25,7 +25,7 @@ import { CitizenSummaryComponent, RegistrationSummary } from './components/citiz
 })
 export class CitizenRegistrationComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly dialog = inject(MatDialog); // 3. Wstrzyknięcie serwisu dialogu
+  private readonly dialog = inject(MatDialog);
   private readonly citizenService = inject(CitizenService);
 
   readonly icons = { ArrowLeft };
@@ -85,7 +85,7 @@ export class CitizenRegistrationComponent {
     };
 
     this.citizenService.registerCitizen(payload).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.summaryData.set({
           pesel: rawForm.pesel,
           firstName: rawForm.firstName,
@@ -93,8 +93,9 @@ export class CitizenRegistrationComponent {
           email: rawForm.email,
           phone: rawForm.phoneNumber,
           pukCode: res.pukCode,
-          activationCode: res.activationCode,
-          registeredAt: new Date(res.registeredAt),
+          agreementNumber: res.agreementNumber,
+          agreement_download_url: res.agreement_download_url,
+          registeredAt: new Date(res.createdAt),
           photoPreviewUrl: this.photoPreview()
         });
         this.isSubmitting.set(false);
@@ -103,11 +104,9 @@ export class CitizenRegistrationComponent {
         console.error('Błąd rejestracji obywatela:', err);
         this.isSubmitting.set(false);
 
-        // Wyciągamy komunikat z odpowiedzi backendu (lub ustawiamy domyślny, jeśli brak struktury)
         const errorMessage = err?.error?.message || 'Wystąpił nieoczekiwany błąd podczas komunikacji z systemem centralnym.';
         const errorCode = err?.error?.code ? `[Kod: ${err.error.code}]` : '';
 
-        // Dynamiczne otwarcie modala z treścią z backendu
         this.dialog.open(AppModalComponent, {
           width: '450px',
           data: {
