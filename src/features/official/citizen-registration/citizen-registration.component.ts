@@ -95,7 +95,7 @@ export class CitizenRegistrationComponent {
           pukCode: res.pukCode,
           agreementNumber: res.agreementNumber,
           agreement_download_url: res.agreement_download_url,
-          registeredAt: new Date(res.createdAt),
+          registeredAt: res.created_at,
           photoPreviewUrl: this.photoPreview()
         });
         this.isSubmitting.set(false);

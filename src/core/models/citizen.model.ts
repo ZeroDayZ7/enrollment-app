@@ -13,9 +13,9 @@ export interface CitizenPayload {
 }
 
 export interface RegisterCitizenResponse {
-  userId: string;
-  agreementNumber: string;
-  pukCode: string;
-  activationCode: string;
-  registeredAt: string;
+  user_id: string;
+  agreement_number: string;
+  agreement_download_url: string;
+  puk_code: string;
+  created_at: string;
 }
