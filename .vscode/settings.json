@@ -6,7 +6,7 @@
   // Ukrywanie artefaktów i plików konfiguracyjnych (Explorer)
   "files.exclude": {
     "**/.angular": true,
-    "**/.github": true,
+    // "**/.github": true,
     "**/.npmrc": true,
     // "**/tsconfig.app.json": true,
     // "**/tsconfig.json": true,
