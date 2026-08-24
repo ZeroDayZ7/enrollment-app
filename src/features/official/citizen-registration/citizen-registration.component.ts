@@ -92,10 +92,10 @@ export class CitizenRegistrationComponent {
           lastName: rawForm.lastName,
           email: rawForm.email,
           phone: rawForm.phoneNumber,
-          pukCode: res.pukCode,
-          agreementNumber: res.agreementNumber,
+          pukCode: res.puk_code,
+          agreementNumber: res.agreement_number,
           agreement_download_url: res.agreement_download_url,
-          registeredAt: new Date(res.createdAt),
+          registeredAt: res.created_at,
           photoPreviewUrl: this.photoPreview()
         });
         this.isSubmitting.set(false);

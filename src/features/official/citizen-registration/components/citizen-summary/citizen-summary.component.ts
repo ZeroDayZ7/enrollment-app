@@ -13,7 +13,7 @@ export interface RegistrationSummary {
   pukCode: string;
   agreementNumber: string;
   agreement_download_url: string;
-  registeredAt: Date;
+  registeredAt: string;
   photoPreviewUrl: string | null;
 }
 

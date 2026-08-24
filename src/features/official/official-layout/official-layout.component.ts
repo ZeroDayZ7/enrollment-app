@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { APP_ROUTES } from '@core/constants/app-routes';
+import { AuthService } from '@core/services/auth.service';
 import {
   History,
   LayoutDashboard,
@@ -14,8 +16,6 @@ import {
   UserPlus,
   Vote
 } from 'lucide-angular';
-import { APP_ROUTES } from '../../../core/constants/app-routes';
-import { AuthService } from '../../../core/services/auth.service';
 
 export interface NavItem {
   label: string;

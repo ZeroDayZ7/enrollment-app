@@ -32,7 +32,7 @@
   <div class="bg-app-bg border border-app-warning/30 rounded-xl p-5 space-y-3">
     <div class="flex items-center gap-2 text-app-warning font-semibold text-xs uppercase tracking-wider">
       <lucide-icon [img]="icons.ShieldAlert" class="w-4 h-4"></lucide-icon>
-      <span>Poufny Kod Awaryjny Obywatela</span>
+      <span>Kod Aktywacyjny</span>
     </div>
     <p class="text-xs text-app-text-muted">
       Przekaż poniższy kod PUK obywatelowi. Służy on do awaryjnego odzyskiwania dostępu do konta w systemie.
@@ -55,14 +55,6 @@
       class="px-4 py-2 bg-app-primary text-white hover:opacity-90 text-xs font-medium rounded-xl flex items-center gap-2 transition-all">
       <lucide-icon [img]="icons.Download" class="w-4 h-4"></lucide-icon>
       Pobierz Umowę PDF
-    </button>
-  </div>
-
-  <!-- Przyciski Akcji -->
-  <div class="pt-6 border-t border-app-border flex items-center justify-between">
-    <button (click)="reset.emit()"
-      class="px-4 py-2 bg-app-surface-hover hover:opacity-80 text-app-text-main text-xs font-medium rounded-xl border border-app-border transition-all">
-      Rejestruj Następnego
     </button>
   </div>
 
