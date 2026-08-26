@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ed25519 } from '@noble/curves/ed25519.js';
 import { hexToBytes } from '@noble/curves/utils.js';
+import { environment } from '../../environments/environment';
 
 export interface DevCardFile {
   cardSerialNumber: string;
@@ -46,24 +47,52 @@ export class CryptoService {
     return json as DevCardFile;
   }
 
-  async signChallenge(challenge: string, privateKeyHex: string): Promise<string> {
+  /**
+   * Pomocnicza funkcja dekodująca Base64 / URL-Safe Base64 do Uint8Array
+   */
+  private base64ToBytes(b64: string): Uint8Array {
+    let normalized = b64.replace(/-/g, '+').replace(/_/g, '/');
+    while (normalized.length % 4 !== 0) {
+      normalized += '=';
+    }
+    const binaryString = atob(normalized);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+  }
+
+  /**
+   * Podpisuje wyzwanie (challenge) kluczem prywatnym z uwzględnieniem domeny (Domain Binding).
+   */
+  async signChallenge(challengeB64: string, privateKeyHex: string, domain: string = environment.domain): Promise<string> {
     console.group('🔑 [CryptoService] Podpisywanie wyzwania');
-    console.log('📥 Input Challenge:', challenge);
+    console.log('📥 Input Challenge (B64):', challengeB64);
+    console.log('📥 Domain:', domain);
     console.log('📥 Input PrivateKey (Hex):', privateKeyHex ? `${privateKeyHex.substring(0, 10)}...` : 'BRAK');
 
     try {
-      // 1. Konwersja ciągu wyzwania na bajty UTF-8 (zgodne z backendowym []byte(storedChallenge))
-      const challengeBytes = new TextEncoder().encode(challenge);
+      // 1. Dekodowanie challenge'a z Base64 do surowych bajtów
+      const challengeBytes = this.base64ToBytes(challengeB64);
       console.log('🔢 Bajty challenge (length):', challengeBytes.length);
 
-      // 2. Dekodowanie klucza prywatnego z formatu Hex
+      // 2. Budowanie payloadu z domena – format "domain:challenge_bytes" (zgodny z Go fmt.Sprintf("%s:%s", domain, string(challengeBytes)))
+      const prefixBytes = new TextEncoder().encode(domain + ':');
+      const payload = new Uint8Array(prefixBytes.length + challengeBytes.length);
+      payload.set(prefixBytes, 0);
+      payload.set(challengeBytes, prefixBytes.length);
+
+      console.log('🔢 Bajty pełnego payloadu (length):', payload.length);
+
+      // 3. Dekodowanie klucza prywatnego z formatu Hex
       const privateKeyBytes = hexToBytes(privateKeyHex);
       console.log('🔢 Bajty klucza prywatnego (length):', privateKeyBytes.length);
 
-      // 3. Generowanie podpisu Ed25519 za pomocą pierwszych 32 bajtów klucza
-      const signatureBytes = ed25519.sign(challengeBytes, privateKeyBytes.slice(0, 32));
+      // 4. Generowanie podpisu Ed25519 za pomocą pierwszych 32 bajtów klucza
+      const signatureBytes = ed25519.sign(payload, privateKeyBytes.slice(0, 32));
 
-      // 4. Konwersja wygenerowanego podpisu do Base64 (backend oczekuje base64.StdEncoding.DecodeString)
+      // 5. Konwersja wygenerowanego podpisu do formatu Base64
       const signatureBase64 = btoa(String.fromCharCode(...signatureBytes));
 
       console.log('✅ Wygenerowany podpis (Base64):', signatureBase64);
