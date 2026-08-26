@@ -1,0 +1,129 @@
+<div class="space-y-6">
+  <div class="bg-app-surface border border-app-border rounded-2xl p-6 shadow-sm">
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-app-text-muted">Rejestr czynności</p>
+        <h1 class="mt-2 text-2xl font-bold text-app-text-main">Dziennik zdarzeń</h1>
+      </div>
+      <div class="flex items-center justify-center w-12 h-12 rounded-xl border border-app-accent/20 bg-app-accent/10 text-app-accent">
+        <lucide-icon [img]="icons.FileText" class="w-6 h-6"></lucide-icon>
+      </div>
+    </div>
+    <p class="mt-4 max-w-2xl text-sm text-app-text-muted">
+      Przegląd zdarzeń systemowych, operacji urzędnika i zdarzeń związanych z weryfikacją obywateli oraz uprawnieniami do głosowania.
+    </p>
+  </div>
+
+  <section class="bg-app-surface border border-app-border rounded-2xl p-6 shadow-sm">
+    <div class="flex items-center gap-3 pb-4 border-b border-app-border">
+      <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-app-primary/10 text-app-primary border border-app-primary/20">
+        <lucide-icon [img]="icons.Filter" class="w-4 h-4"></lucide-icon>
+      </div>
+      <div>
+        <h2 class="text-base font-semibold text-app-text-main">Filtry</h2>
+      </div>
+    </div>
+
+    <div class="mt-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 items-end">
+      <label class="block">
+        <span class="mb-2 block text-xs font-medium uppercase tracking-[0.12em] text-app-text-muted">Typ zdarzenia</span>
+        <select [(ngModel)]="selectedType" class="w-full rounded-xl border border-app-border bg-app-bg px-3 py-2.5 text-sm text-app-text-main focus:outline-none focus:border-app-primary focus:ring-2 focus:ring-app-primary/20 transition">
+          @for (option of eventTypes; track option) {
+            <option [ngValue]="option">{{ option === 'all' ? 'Wszystkie' : option }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="block">
+        <span class="mb-2 block text-xs font-medium uppercase tracking-[0.12em] text-app-text-muted">Wynik</span>
+        <select [(ngModel)]="selectedResult" class="w-full rounded-xl border border-app-border bg-app-bg px-3 py-2.5 text-sm text-app-text-main focus:outline-none focus:border-app-primary focus:ring-2 focus:ring-app-primary/20 transition">
+          @for (option of resultTypes; track option) {
+            <option [ngValue]="option">{{ option === 'all' ? 'Wszystkie' : option }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="block">
+        <span class="mb-2 block text-xs font-medium uppercase tracking-[0.12em] text-app-text-muted">Użytkownik</span>
+        <select [(ngModel)]="selectedUser" class="w-full rounded-xl border border-app-border bg-app-bg px-3 py-2.5 text-sm text-app-text-main focus:outline-none focus:border-app-primary focus:ring-2 focus:ring-app-primary/20 transition">
+          @for (user of users; track user) {
+            <option [ngValue]="user">{{ user === 'all' ? 'Wszyscy' : user }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="block">
+        <span class="mb-2 block text-xs font-medium uppercase tracking-[0.12em] text-app-text-muted">Data od</span>
+        <input type="date" [(ngModel)]="startDate" class="w-full rounded-xl border border-app-border bg-app-bg px-3 py-2.5 text-sm text-app-text-main focus:outline-none focus:border-app-primary focus:ring-2 focus:ring-app-primary/20 transition" />
+      </label>
+
+      <label class="block">
+        <span class="mb-2 block text-xs font-medium uppercase tracking-[0.12em] text-app-text-muted">Data do</span>
+        <input type="date" [(ngModel)]="endDate" class="w-full rounded-xl border border-app-border bg-app-bg px-3 py-2.5 text-sm text-app-text-main focus:outline-none focus:border-app-primary focus:ring-2 focus:ring-app-primary/20 transition" />
+      </label>
+    </div>
+
+    <div class="mt-5 flex justify-end">
+      <button type="button" (click)="clearFilters()" class="rounded-xl border border-app-border bg-app-surface-hover px-4 py-2 text-sm font-medium text-app-text-main transition hover:bg-app-bg">
+        Wyczyść filtry
+      </button>
+    </div>
+  </section>
+
+  <section class="bg-app-surface border border-app-border rounded-2xl overflow-hidden shadow-sm">
+    <div class="px-5 py-4 border-b border-app-border flex items-center justify-between gap-3">
+      <div>
+        <h2 class="text-base font-semibold text-app-text-main">Lista zdarzeń</h2>
+        <p class="text-xs text-app-text-muted">{{ filteredEvents.length }} wyników</p>
+      </div>
+      <div class="flex items-center gap-2 text-app-text-muted">
+        <lucide-icon [img]="icons.Search" class="w-4 h-4"></lucide-icon>
+        <span class="text-xs uppercase tracking-[0.12em]">Audit</span>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm text-app-text-main">
+        <thead class="bg-app-bg/70 uppercase tracking-wider text-app-text-muted border-b border-app-border font-medium">
+          <tr>
+            <th class="px-5 py-3">Data i czas</th>
+            <th class="px-5 py-3">Użytkownik</th>
+            <th class="px-5 py-3">Akcja</th>
+            <th class="px-5 py-3">Zasób</th>
+            <th class="px-5 py-3">Wynik</th>
+            <th class="px-5 py-3">IP</th>
+            <th class="px-5 py-3">Correlation ID</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-app-border/70">
+          @for (event of filteredEvents; track event.id) {
+            <tr class="hover:bg-app-surface-hover transition-colors duration-150">
+              <td class="px-5 py-4 font-mono text-xs text-app-text-main">{{ event.timestamp | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+              <td class="px-5 py-4 text-app-text-main">{{ event.user }}</td>
+              <td class="px-5 py-4 text-app-text-main">{{ event.action }}</td>
+              <td class="px-5 py-4 text-app-text-muted">{{ event.resource }}</td>
+              <td class="px-5 py-4">
+                <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]"
+                  [ngClass]="{
+                    'border-app-success/20 bg-app-success/10 text-app-success': event.result === 'SUCCESS',
+                    'border-app-danger/30 bg-app-danger/10 text-app-danger': event.result === 'FAILED',
+                    'border-app-warning/30 bg-app-warning/10 text-app-warning': event.result === 'WARNING'
+                  }">
+                  {{ event.result }}
+                </span>
+              </td>
+              <td class="px-5 py-4 font-mono text-xs text-app-text-muted">{{ event.ip }}</td>
+              <td class="px-5 py-4 font-mono text-xs text-app-text-muted">{{ event.correlationId }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (filteredEvents.length === 0) {
+      <div class="p-6 text-sm text-app-text-muted border-t border-app-border bg-app-bg">
+        Brak wyników dla wybranych filtrów.
+      </div>
+    }
+  </section>
+</div>
