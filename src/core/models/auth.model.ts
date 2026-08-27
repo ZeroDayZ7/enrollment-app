@@ -16,11 +16,26 @@ export interface UserProfile {
   last_login?: string;
 }
 
+export interface EmployeeTrustData {
+  challenge: string;
+  setup_token: string;
+}
+
 export interface LoginStep1Response {
   type: string;
-  "2fa_required": boolean;
-  setup_token: string;
-  challenge: string;
+  employee_trust: EmployeeTrustData;
+}
+
+export interface LoginSuccessData {
+  access_token: string;
+  refresh_token: string;
+  user_id: string;
+  expires_at: number;
+}
+
+export interface LoginStep2Response {
+  type: string;
+  success: LoginSuccessData;
 }
 
 export interface LoginStep2Request {
