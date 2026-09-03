@@ -1,8 +1,8 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, inject, input, output } from '@angular/core';
 import { Download, LucideAngularModule, ShieldAlert } from 'lucide-angular';
-import { environment } from '../../../../../environments/environment'; // Dopasuj ścieżkę względną do pliku environments
+import { environment } from '../../../../../environments/environment';
 
 export interface RegistrationSummary {
   pesel: string;
@@ -32,11 +32,20 @@ export class CitizenSummaryComponent {
   readonly icons = { ShieldAlert, Download };
 
   downloadAgreement(): void {
-    // Składamy pełny adres URL dopiero tutaj:
     const url = `${environment.apiUrl}/official${this.summary().agreement_download_url}`;
 
-    this.http.get(url, { responseType: 'blob' }).subscribe({
-      next: (blob) => {
+    // Przygotowanie opcji żądania
+    const options = {
+      responseType: 'blob' as 'json', // Obejście typowania TS dla blob
+      withCredentials: true,           // Wsyłanie ciasteczek sesyjnych
+      headers: new HttpHeaders({
+        'X-Device-Fingerprint': 'web-client' // Wymagany nagłówek przez Gateway/BFF
+      })
+    };
+
+    this.http.get(url, options).subscribe({
+      next: (data: any) => {
+        const blob = new Blob([data], { type: 'application/pdf' });
         const downloadLink = document.createElement('a');
         downloadLink.href = window.URL.createObjectURL(blob);
         downloadLink.download = `umowa-${this.summary().agreementNumber}.pdf`;

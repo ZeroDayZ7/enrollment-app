@@ -67,40 +67,39 @@ export class CryptoService {
    * Podpisuje wyzwanie (challenge) kluczem prywatnym z uwzględnieniem domeny (Domain Binding).
    */
   async signChallenge(challengeB64: string, privateKeyHex: string, domain: string = environment.domain): Promise<string> {
-    console.group('🔑 [CryptoService] Podpisywanie wyzwania');
-    console.log('📥 Input Challenge (B64):', challengeB64);
-    console.log('📥 Domain:', domain);
-    console.log('📥 Input PrivateKey (Hex):', privateKeyHex ? `${privateKeyHex.substring(0, 10)}...` : 'BRAK');
+    console.group('🔑 [DEBUG ANGULAR] Podpisywanie wyzwania');
 
     try {
-      // 1. Dekodowanie challenge'a z Base64 do surowych bajtów
       const challengeBytes = this.base64ToBytes(challengeB64);
-      console.log('🔢 Bajty challenge (length):', challengeBytes.length);
-
-      // 2. Budowanie payloadu z domena – format "domain:challenge_bytes" (zgodny z Go fmt.Sprintf("%s:%s", domain, string(challengeBytes)))
       const prefixBytes = new TextEncoder().encode(domain + ':');
       const payload = new Uint8Array(prefixBytes.length + challengeBytes.length);
       payload.set(prefixBytes, 0);
       payload.set(challengeBytes, prefixBytes.length);
 
-      console.log('🔢 Bajty pełnego payloadu (length):', payload.length);
-
-      // 3. Dekodowanie klucza prywatnego z formatu Hex
       const privateKeyBytes = hexToBytes(privateKeyHex);
-      console.log('🔢 Bajty klucza prywatnego (length):', privateKeyBytes.length);
+      const seedBytes = privateKeyBytes.slice(0, 32);
 
-      // 4. Generowanie podpisu Ed25519 za pomocą pierwszych 32 bajtów klucza
-      const signatureBytes = ed25519.sign(payload, privateKeyBytes.slice(0, 32));
+      // Konwersja payloadu do HEX dla łatwego porównania z Go
+      const payloadHex = Array.from(payload).map(b => b.toString(16).padStart(2, '0')).join('');
+      const challengeHex = Array.from(challengeBytes).map(b => b.toString(16).padStart(2, '0')).join('');
 
-      // 5. Konwersja wygenerowanego podpisu do formatu Base64
+      console.log('📥 Domain:', domain);
+      console.log('📥 Challenge B64:', challengeB64);
+      console.log('📥 Challenge HEX:', challengeHex);
+      console.log('📥 Payload HEX:', payloadHex);
+      console.log('📥 Payload String:', new TextDecoder().decode(payload));
+      console.log('📥 Seed HEX (32 bajty):', Array.from(seedBytes).map(b => b.toString(16).padStart(2, '0')).join(''));
+
+      const signatureBytes = ed25519.sign(payload, seedBytes);
       const signatureBase64 = btoa(String.fromCharCode(...signatureBytes));
 
-      console.log('✅ Wygenerowany podpis (Base64):', signatureBase64);
+      console.log('✅ Signature B64:', signatureBase64);
+      console.log('✅ Signature HEX:', Array.from(signatureBytes).map(b => b.toString(16).padStart(2, '0')).join(''));
       console.groupEnd();
 
       return signatureBase64;
     } catch (err) {
-      console.error('❌ Błąd podczas generowania podpisu kryptograficznego:', err);
+      console.error('❌ Błąd podczas generowania podpisu:', err);
       console.groupEnd();
       throw err;
     }
