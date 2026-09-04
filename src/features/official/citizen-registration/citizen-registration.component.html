@@ -19,7 +19,7 @@
   } @else {
 
   <app-citizen-form [form]="registrationForm" [photoPreview]="photoPreview()" [isSubmitting]="isSubmitting()"
-    (formSubmit)="onSubmit()" (fileSelected)="onFileSelected($event)">
+    (formSubmit)="onSubmit()" (fileSelected)="onFileSelected($event)" (fillMock)="fillWithMockData()">
   </app-citizen-form>
 
   }

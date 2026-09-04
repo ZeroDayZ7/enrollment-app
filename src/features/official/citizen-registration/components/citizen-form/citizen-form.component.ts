@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ImageIcon, LucideAngularModule, Upload, UserPlus } from 'lucide-angular';
+import { Dices, ImageIcon, LucideAngularModule, Upload, UserPlus } from 'lucide-angular';
 
 @Component({
   selector: 'app-citizen-form',
@@ -16,6 +16,7 @@ export class CitizenFormComponent {
 
   formSubmit = output<void>();
   fileSelected = output<Event>();
+  fillMock = output<void>();
 
-  readonly icons = { UserPlus, ImageIcon, Upload };
+  readonly icons = { UserPlus, ImageIcon, Upload, Dices };
 }
