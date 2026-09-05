@@ -63,8 +63,18 @@ export class OfficialLoginComponent {
       next: (res) => {
         console.log('📥 Odpowiedź z Step 1 (Backend):', res);
         this.isLoading.set(false);
-        this.challenge.set(res.challenge);
-        console.log('🔑 Ustawiono challenge w sygnale:', res.challenge);
+
+        const challengeVal = res.employee_trust?.challenge;
+
+        if (!challengeVal) {
+          console.error('❌ Brak pola employee_trust.challenge w odpowiedzi backendu');
+          this.errorMessage.set('Nieprawidłowa struktura odpowiedzi serwera autoryzacji.');
+          console.groupEnd();
+          return;
+        }
+
+        this.challenge.set(challengeVal);
+        console.log('🔑 Ustawiono challenge w sygnale:', challengeVal);
         this.step.set(2);
         console.log('🔄 Zmieniono krok na 2');
         console.groupEnd();

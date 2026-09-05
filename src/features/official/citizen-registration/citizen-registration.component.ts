@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { RouterLink } from '@angular/router';
+import { generateMockCitizenData } from '@core/utils/mock-data-generator';
 import { ArrowLeft, LucideAngularModule } from 'lucide-angular';
 
 import { CitizenPayload } from '@core/models/citizen.model';
@@ -34,20 +35,41 @@ export class CitizenRegistrationComponent {
   readonly summaryData = signal<RegistrationSummary | null>(null);
   readonly photoPreview = signal<string | null>(null);
 
-  readonly registrationForm = this.fb.nonNullable.group({
-    pesel: ['89010112345', [Validators.required, Validators.pattern(/^\d{11}$/)]],
-    firstName: ['Jan', [Validators.required, Validators.minLength(2)]],
+  readonly registrationForm: FormGroup = this.fb.group({
+    pesel: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
+    firstName: ['', [Validators.required]],
     secondName: [''],
-    lastName: ['Kowalski', [Validators.required, Validators.minLength(2)]],
-    email: ['jan.kowalski@example.com', [Validators.required, Validators.email]],
-    phoneNumber: ['+48600700800', [Validators.required, Validators.pattern(/^\+?[0-9]{9,15}$/)]],
-    city: ['Warszawa', [Validators.required]],
-    street: ['Marszałkowska', [Validators.required]],
-    houseNumber: ['10', [Validators.required]],
-    flatNumber: ['5'],
-    postalCode: ['00-001', [Validators.required, Validators.pattern(/^\d{2}-\d{3}$/)]],
-    acceptTerms: [true, [Validators.requiredTrue]]
+    lastName: ['', [Validators.required]],
+    email: ['', [Validators.required, Validators.email]],
+    phoneNumber: ['', [Validators.required]],
+    city: ['', [Validators.required]],
+    street: ['', [Validators.required]],
+    houseNumber: ['', [Validators.required]],
+    flatNumber: [''],
+    postalCode: ['', [Validators.required, Validators.pattern(/^\d{2}-\d{3}$/)]],
+    acceptTerms: [false, [Validators.requiredTrue]]
   });
+
+  fillWithMockData(): void {
+    const mock = generateMockCitizenData();
+
+    this.registrationForm.patchValue({
+      pesel: mock.pesel,
+      firstName: mock.firstName,
+      secondName: mock.secondName,
+      lastName: mock.lastName,
+      email: mock.email,
+      phoneNumber: mock.phoneNumber,
+      city: mock.city,
+      street: mock.street,
+      houseNumber: mock.houseNumber,
+      flatNumber: mock.flatNumber,
+      postalCode: mock.postalCode,
+      acceptTerms: true
+    });
+
+    this.photoPreview.set(mock.photoUrl);
+  }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -124,19 +146,6 @@ export class CitizenRegistrationComponent {
   resetForm(): void {
     this.summaryData.set(null);
     this.photoPreview.set(null);
-    this.registrationForm.reset({
-      pesel: '89010112345',
-      firstName: 'Jan',
-      secondName: '',
-      lastName: 'Kowalski',
-      email: 'jan.kowalski@example.com',
-      phoneNumber: '+48600700800',
-      city: 'Warszawa',
-      street: 'Marszałkowska',
-      houseNumber: '10',
-      flatNumber: '5',
-      postalCode: '00-001',
-      acceptTerms: true
-    });
+    this.registrationForm.reset();
   }
 }

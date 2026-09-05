@@ -10,9 +10,13 @@
         <p class="text-xs text-app-text-muted">Etap 1: Utworzenie konta, zdjęcie biometryczne i umowa</p>
       </div>
     </div>
-    <span
-      class="text-[10px] font-mono bg-app-bg text-app-text-muted px-2.5 py-1 rounded-lg border border-app-border">MOCK
-      DATA READY</span>
+
+    <!-- PRZYCISK GENERATORA MOCK DANYCH -->
+    <button type="button" (click)="fillMock.emit()"
+      class="inline-flex items-center gap-1.5 text-[11px] font-mono font-semibold bg-app-primary/10 hover:bg-app-primary/20 text-app-primary px-3 py-1.5 rounded-lg border border-app-primary/30 transition-all active:scale-95 cursor-pointer">
+      <lucide-icon [img]="icons.Dices" class="w-3.5 h-3.5"></lucide-icon>
+      <span>GENERUJ MOCK DANE</span>
+    </button>
   </div>
 
   <form [formGroup]="form()" (ngSubmit)="formSubmit.emit()" class="space-y-6">
@@ -49,7 +53,6 @@
       </div>
     </div>
 
-    <!-- DANE PODSTAWOWE -->
     <!-- DANE PODSTAWOWE -->
     <div>
       <h2 class="text-xs font-semibold text-app-text-muted uppercase tracking-wider mb-3">2. Dane Identyfikacyjne i

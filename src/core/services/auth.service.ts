@@ -5,7 +5,13 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { APP_ROUTES } from '../constants/app-routes';
-import { LoginRequest, LoginStep1Response, LoginStep2Request, UserProfile } from '../models/auth.model';
+import {
+  LoginRequest,
+  LoginStep1Response,
+  LoginStep2Request,
+  LoginStep2Response,
+  UserProfile
+} from '../models/auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +25,6 @@ export class AuthService {
   readonly permissions = computed(() => this.currentUser()?.permissions ?? []);
   readonly role = computed(() => this.currentUser()?.role ?? null);
 
-  // Przechowywanie tymczasowego setupToken w pamięci RAM
   private readonly setupToken = signal<string | null>(null);
 
   private isRefreshing = false;
@@ -35,31 +40,40 @@ export class AuthService {
     );
   }
 
-  // Krok 1: Weryfikacja Loginu + Hasła -> Przechwycenie setup_token i challenge
+  // Krok 1: Przechwycenie setup_token z obiektu employee_trust
   loginStep1(credentials: LoginRequest): Observable<LoginStep1Response> {
     return this.http.post<LoginStep1Response>(API_ENDPOINTS.OFFICIAL.AUTH.LOGIN, credentials).pipe(
       tap((response) => {
-        if (response?.setup_token) {
-          this.setupToken.set(response.setup_token);
+        if (response?.employee_trust?.setup_token) {
+          this.setupToken.set(response.employee_trust.setup_token);
         }
       })
     );
   }
 
-  // Krok 2: Przekazanie setup_token w Bearer i weryfikacja podpisu
+  // Krok 2: Obsługa zwrotki ze strukturą LoginStep2Response
   loginStep2(payload: LoginStep2Request): Observable<UserProfile | null> {
     const token = this.setupToken();
 
-    // Jeśli mamy token w RAM, budujemy nagłówek Authorization
     const headers = token
       ? new HttpHeaders({ Authorization: `Bearer ${token}` })
       : undefined;
 
     return this.http
-      .post<{ success: boolean }>(API_ENDPOINTS.OFFICIAL.AUTH.LOGIN_STEP2, payload, { headers })
+      .post<LoginStep2Response>(API_ENDPOINTS.OFFICIAL.AUTH.LOGIN_STEP2, payload, { headers })
       .pipe(
-        tap(() => this.clearSetupToken()), // Czyszczenie tokenu po użyciu
-        switchMap(() => this.checkSession())
+        switchMap((response) => {
+          this.clearSetupToken();
+
+          if (response?.type !== 'SUCCESS' || !response?.success) {
+            return throwError(() => new Error('Brak danych autoryzacji w odpowiedzi serwera'));
+          }
+
+          // Jeśli tokeny nie są wyłącznie w HttpOnly cookie, tutaj możesz je opcjonalnie zapisać:
+          // localStorage.setItem('access_token', response.success.access_token);
+
+          return this.checkSession();
+        })
       );
   }
 

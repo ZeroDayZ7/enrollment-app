@@ -1,0 +1,136 @@
+<div class="space-y-6">
+  <div class="bg-app-surface border border-app-border rounded-2xl p-6 shadow-sm">
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-app-text-muted">Weryfikacja tożsamości</p>
+        <h1 class="mt-2 text-2xl font-bold text-app-text-main">Weryfikacja QR</h1>
+      </div>
+      <div class="flex items-center justify-center w-12 h-12 rounded-xl border border-app-primary/20 bg-app-primary/10 text-app-primary">
+        <lucide-icon [img]="icons.QrCode" class="w-6 h-6"></lucide-icon>
+      </div>
+    </div>
+    <p class="mt-4 max-w-2xl text-sm text-app-text-muted">
+      Skorzystaj z tej demonstracyjnej weryfikacji, aby sprawdzić poprawność dokumentu lub kodu obywatela przed dalszym przetwarzaniem.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-6">
+    <section class="bg-app-surface border border-app-border rounded-2xl p-6 shadow-sm">
+      <div class="flex items-center gap-3 pb-4 border-b border-app-border">
+        <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-app-accent/10 text-app-accent border border-app-accent/20">
+          <lucide-icon [img]="icons.ShieldCheck" class="w-4 h-4"></lucide-icon>
+        </div>
+        <div>
+          <h2 class="text-base font-semibold text-app-text-main">Kod do weryfikacji</h2>
+          <p class="text-xs text-app-text-muted">Tryb demonstracyjny — bez skanowania urządzeniem</p>
+        </div>
+      </div>
+
+      <div class="mt-5 space-y-4">
+        <label class="block">
+          <span class="mb-2 block text-sm font-medium text-app-text-main">Kod QR / identyfikator dokumentu</span>
+          <textarea
+            rows="5"
+            [value]="verificationCode()"
+            (input)="verificationCode.set($any($event.target).value)"
+            class="w-full rounded-xl border border-app-border bg-app-bg px-4 py-3 text-sm text-app-text-main placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary focus:ring-2 focus:ring-app-primary/20 transition"
+            placeholder="Wklej kod, np. QR-2026-7812"
+          ></textarea>
+        </label>
+
+        <div class="flex flex-wrap gap-3">
+          <button
+            type="button"
+            (click)="verifyDocument()"
+            class="inline-flex items-center justify-center rounded-xl bg-app-primary px-4 py-2.5 text-sm font-medium text-white hover:opacity-90 transition"
+          >
+            Weryfikuj
+          </button>
+          <button
+            type="button"
+            (click)="resetVerification()"
+            class="inline-flex items-center justify-center rounded-xl border border-app-border bg-app-surface-hover px-4 py-2.5 text-sm font-medium text-app-text-main hover:bg-app-bg transition"
+          >
+            Wyczyść
+          </button>
+        </div>
+
+        <div class="rounded-xl border border-dashed border-app-border bg-app-bg p-3">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-app-text-muted">Przykładowy kod</p>
+          <div class="mt-2 flex flex-wrap gap-2">
+            <span class="rounded-full border border-app-primary/20 bg-app-primary/10 px-2.5 py-1 text-xs font-mono text-app-primary">QR-2026-7812</span>
+            <span class="rounded-full border border-app-border bg-app-surface px-2.5 py-1 text-xs font-mono text-app-text-muted">VRF-2026-7812</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="bg-app-surface border border-app-border rounded-2xl p-6 shadow-sm">
+      <div class="flex items-center gap-3 pb-4 border-b border-app-border">
+        <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-app-success/10 text-app-success border border-app-success/20">
+          <lucide-icon [img]="verificationStatus() === 'success' ? icons.CheckCircle2 : verificationStatus() === 'error' ? icons.AlertTriangle : icons.FileBadge2" class="w-4 h-4"></lucide-icon>
+        </div>
+        <div>
+          <h2 class="text-base font-semibold text-app-text-main">Status weryfikacji</h2>
+        </div>
+      </div>
+
+      @if (verificationStatus() === 'success') {
+        <div class="mt-5 rounded-xl border border-app-success/30 bg-app-success/10 p-4">
+          <p class="text-sm font-semibold text-app-success">Weryfikacja pomyślna</p>
+          <p class="mt-2 text-sm text-app-text-main">{{ statusMessage() }}</p>
+          <p class="mt-3 text-xs text-app-text-muted">{{ verificationNote() }}</p>
+        </div>
+      } @else if (verificationStatus() === 'error') {
+        <div class="mt-5 rounded-xl border border-app-warning/30 bg-app-warning/10 p-4">
+          <p class="text-sm font-semibold text-app-warning">Błąd weryfikacji</p>
+          <p class="mt-2 text-sm text-app-text-main">{{ statusMessage() }}</p>
+          <p class="mt-3 text-xs text-app-text-muted">{{ verificationNote() }}</p>
+        </div>
+      } @else {
+        <div class="mt-5 rounded-xl border border-app-border bg-app-bg p-4">
+          <p class="text-sm text-app-text-main">{{ statusMessage() }}</p>
+          <p class="mt-3 text-xs text-app-text-muted">{{ verificationNote() }}</p>
+        </div>
+      }
+    </aside>
+  </div>
+
+  <section class="bg-app-surface border border-app-border rounded-2xl p-6 shadow-sm">
+    <div class="flex items-center justify-between gap-3 border-b border-app-border pb-4">
+      <div>
+        <h2 class="text-base font-semibold text-app-text-main">Dane zweryfikowanego dokumentu</h2>
+        <p class="text-xs text-app-text-muted">Przykładowy widok danych obywatela po poprawnej weryfikacji</p>
+      </div>
+      <span class="rounded-full border border-app-primary/20 bg-app-primary/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-app-primary">
+        WIDOCZNE
+      </span>
+    </div>
+
+    <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+      <div class="rounded-xl border border-app-border bg-app-bg p-4">
+        <p class="text-xs uppercase tracking-[0.12em] text-app-text-muted">Obywatel</p>
+        <p class="mt-2 text-lg font-semibold text-app-text-main">{{ document.citizenName }}</p>
+        <p class="mt-1 text-app-text-muted">{{ document.documentType }}</p>
+      </div>
+
+      <div class="rounded-xl border border-app-border bg-app-bg p-4">
+        <p class="text-xs uppercase tracking-[0.12em] text-app-text-muted">Numer dokumentu</p>
+        <p class="mt-2 text-lg font-semibold text-app-text-main font-mono">{{ document.documentNumber }}</p>
+        <p class="mt-1 text-app-text-muted">PESEL: {{ document.pesel }}</p>
+      </div>
+
+      <div class="rounded-xl border border-app-border bg-app-bg p-4">
+        <p class="text-xs uppercase tracking-[0.12em] text-app-text-muted">Kod QR</p>
+        <p class="mt-2 text-lg font-semibold text-app-text-main font-mono">{{ document.qrCode }}</p>
+        <p class="mt-1 text-app-text-muted">Ostatnia weryfikacja: {{ document.lastVerifiedAt }}</p>
+      </div>
+
+      <div class="rounded-xl border border-app-border bg-app-bg p-4">
+        <p class="text-xs uppercase tracking-[0.12em] text-app-text-muted">Ważność</p>
+        <p class="mt-2 text-lg font-semibold text-app-text-main">Ważny</p>
+        <p class="mt-1 text-app-text-muted">Od: {{ document.issueDate }} · Do: {{ document.expiryDate }}</p>
+      </div>
+    </div>
+  </section>
+</div>

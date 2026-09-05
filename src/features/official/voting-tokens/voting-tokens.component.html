@@ -1,0 +1,153 @@
+<div class="space-y-6">
+  <div class="bg-app-surface border border-app-border rounded-2xl p-6 shadow-sm">
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-app-text-muted">E-voting</p>
+        <h1 class="mt-2 text-2xl font-bold text-app-text-main">Uprawnienia e-Voting</h1>
+      </div>
+      <div class="flex items-center justify-center w-12 h-12 rounded-xl border border-app-success/20 bg-app-success/10 text-app-success">
+        <lucide-icon [img]="icons.ShieldCheck" class="w-6 h-6"></lucide-icon>
+      </div>
+    </div>
+    <p class="mt-4 max-w-2xl text-sm text-app-text-muted">
+      Demonstracyjna obsługa uprawnień do głosowania przygotowana pod przyszłe połączenie z API rejestru obywateli i systemu tokenizacji.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-[0.9fr_1.1fr] gap-6">
+    <section class="bg-app-surface border border-app-border rounded-2xl p-6 shadow-sm">
+      <div class="flex items-center gap-3 pb-4 border-b border-app-border">
+        <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-app-primary/10 text-app-primary border border-app-primary/20">
+          <lucide-icon [img]="icons.Search" class="w-4 h-4"></lucide-icon>
+        </div>
+        <div>
+          <h2 class="text-base font-semibold text-app-text-main">Wyszukaj obywatela</h2>
+        </div>
+      </div>
+
+      <label class="mt-5 block">
+        <span class="mb-2 block text-sm font-medium text-app-text-main">Imię, ID lub miejscowość</span>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          class="w-full rounded-xl border border-app-border bg-app-bg px-4 py-3 text-sm text-app-text-main placeholder:text-app-text-muted/70 focus:outline-none focus:border-app-primary focus:ring-2 focus:ring-app-primary/20 transition"
+          placeholder="np. Anna, CIT-1042, Warszawa"
+        />
+      </label>
+
+      <div class="mt-5 space-y-3">
+        @for (citizen of filteredCitizens; track citizen.id) {
+          <button
+            type="button"
+            (click)="selectCitizen(citizen)"
+            class="w-full rounded-xl border p-4 text-left transition hover:border-app-primary/40 hover:bg-app-surface-hover"
+            [ngClass]="citizen.id === selectedCitizen.id ? 'border-app-primary/40 bg-app-primary/5' : 'border-app-border bg-app-bg'"
+          >
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <p class="text-sm font-semibold text-app-text-main">{{ citizen.fullName }}</p>
+                <p class="text-xs text-app-text-muted">{{ citizen.id }} · {{ citizen.residence }}</p>
+              </div>
+              <span class="rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em]"
+                [ngClass]="{
+                  'border-app-success/20 bg-app-success/10 text-app-success': citizen.permissionStatus === 'Wydane',
+                  'border-app-warning/30 bg-app-warning/10 text-app-warning': citizen.permissionStatus === 'Oczekujące',
+                  'border-app-danger/30 bg-app-danger/10 text-app-danger': citizen.permissionStatus === 'Unieważnione'
+                }">
+                {{ citizen.permissionStatus }}
+              </span>
+            </div>
+          </button>
+        }
+
+        @if (filteredCitizens.length === 0) {
+          <div class="rounded-xl border border-dashed border-app-border bg-app-bg p-4 text-sm text-app-text-muted">
+            Brak wyników dla podanego zapytania.
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="bg-app-surface border border-app-border rounded-2xl p-6 shadow-sm">
+      <div class="flex items-center justify-between gap-4 pb-4 border-b border-app-border">
+        <div>
+          <h2 class="text-base font-semibold text-app-text-main">Szczegóły obywatela</h2>
+          <p class="text-xs text-app-text-muted">Status uprawnienia i token</p>
+        </div>
+        <span class="rounded-full border border-app-border bg-app-bg px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-app-text-muted">
+          MOCK
+        </span>
+      </div>
+
+      <div class="mt-5 space-y-5">
+        <div class="rounded-xl border border-app-border bg-app-bg p-4">
+          <p class="text-xs uppercase tracking-[0.12em] text-app-text-muted">Obywatel</p>
+          <p class="mt-2 text-xl font-bold text-app-text-main">{{ selectedCitizen.fullName }}</p>
+          <div class="mt-3 grid grid-cols-2 gap-3 text-sm text-app-text-muted">
+            <div>
+              <p class="text-[10px] uppercase tracking-[0.12em] text-app-text-muted">Data urodzenia</p>
+              <p class="mt-1 text-app-text-main">{{ selectedCitizen.birthDate }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] uppercase tracking-[0.12em] text-app-text-muted">Miejscowość</p>
+              <p class="mt-1 text-app-text-main">{{ selectedCitizen.residence }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-xl border border-app-border bg-app-bg p-4">
+          <p class="text-xs uppercase tracking-[0.12em] text-app-text-muted">Status uprawnienia</p>
+          <div class="mt-3 flex items-center justify-between gap-4">
+            <span class="rounded-full border px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.14em]"
+              [ngClass]="{
+                'border-app-success/20 bg-app-success/10 text-app-success': selectedCitizen.permissionStatus === 'Wydane',
+                'border-app-warning/30 bg-app-warning/10 text-app-warning': selectedCitizen.permissionStatus === 'Oczekujące',
+                'border-app-danger/30 bg-app-danger/10 text-app-danger': selectedCitizen.permissionStatus === 'Unieważnione'
+              }">
+              {{ selectedCitizen.permissionStatus }}
+            </span>
+            <span class="text-xs text-app-text-muted">Ostatnia zmiana: {{ selectedCitizen.lastUpdated }}</span>
+          </div>
+        </div>
+
+        <div class="rounded-xl border border-app-border bg-app-bg p-4">
+          <p class="text-xs uppercase tracking-[0.12em] text-app-text-muted">Token / status tokenu</p>
+          <div class="mt-3 space-y-2">
+            <p class="font-mono text-sm text-app-text-main">{{ selectedCitizen.token }}</p>
+            <span class="inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-xs font-medium"
+              [ngClass]="{
+                'border-app-success/20 bg-app-success/10 text-app-success': selectedCitizen.tokenStatus === 'Aktywny',
+                'border-app-warning/30 bg-app-warning/10 text-app-warning': selectedCitizen.tokenStatus === 'Oczekuje na wydanie',
+                'border-app-danger/30 bg-app-danger/10 text-app-danger': selectedCitizen.tokenStatus === 'Unieważniony'
+              }">
+              <lucide-icon [img]="selectedCitizen.tokenStatus === 'Aktywny' ? icons.BadgeCheck : selectedCitizen.tokenStatus === 'Unieważniony' ? icons.Ban : icons.CircleAlert" class="w-3.5 h-3.5"></lucide-icon>
+              {{ selectedCitizen.tokenStatus }}
+            </span>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-3 pt-2">
+          <button
+            type="button"
+            (click)="issuePermission()"
+            class="inline-flex items-center justify-center rounded-xl bg-app-success px-4 py-2.5 text-sm font-medium text-white hover:opacity-90 transition"
+          >
+            Wydaj uprawnienie
+          </button>
+          <button
+            type="button"
+            (click)="revokePermission()"
+            class="inline-flex items-center justify-center rounded-xl border border-app-border bg-app-surface-hover px-4 py-2.5 text-sm font-medium text-app-text-main hover:bg-app-bg transition"
+          >
+            Unieważnij
+          </button>
+        </div>
+
+        <div class="rounded-xl border border-app-primary/20 bg-app-primary/10 p-4">
+          <p class="text-xs uppercase tracking-[0.12em] text-app-primary">Potwierdzenie operacji</p>
+          <p class="mt-2 text-sm text-app-text-main">{{ confirmationMessage }}</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
